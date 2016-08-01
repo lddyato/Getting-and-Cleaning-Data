@@ -15,15 +15,32 @@ which(agricultureLogical)
 
 What are the first 3 values that result?
 
-
-
+**Answer:**
+```r
+if(!file.exists("D:/coursera/Getting and cleaning data/week3"))
+        {dir.create("D:/coursera/Getting and cleaning data/week3")}
+fileurl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(fileurl, destfile="D:/coursera/Getting and cleaning data/week3/hid.csv")
+data <- read.csv("D:/coursera/Getting and cleaning data/week3/hid.csv")
+data$agricultureLogical <- data$ACR>=3 & data$AGS >= 6
+which(data$agricultureLogical == T)
+```
 ## Question 2
 Using the jpeg package read in the following picture of your instructor into R
 
 <https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg>
 
-Use the parameter native=TRUE. What are the 30th and 80th quantiles of the resulting data? (some Linux systems may produce an answer 638 different for the 30th quantile)
+Use the parameter native=TRUE. What are the 30th and 80th quantiles of the resulting data? (some Linux systems may produce an answer 638 different for the 30th quantile)  
 
+**Answer:**
+```r
+install.packages("jpeg")
+library(jpeg)
+fileurl1 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg"
+download.file(fileurl1, destfile="D:/coursera/Getting and cleaning data/week3/jeff.jpg", mode="wb")
+img <- readJPEG("D:/coursera/Getting and cleaning data/week3/jeff.jpg", native=TRUE)
+quantile(img, probs=c(0.3, 0.8), na.rm=TRUE)
+```
 
 ## Question 3
 Load the Gross Domestic Product data for the 190 ranked countries in this data set:
@@ -40,15 +57,43 @@ Original data sources:
 
 <http://data.worldbank.org/data-catalog/GDP-ranking-table>
 
-<http://data.worldbank.org/data-catalog/ed-stats>
+<http://data.worldbank.org/data-catalog/ed-stats>  
 
-
+**Answer:**
+```r
+gdpurl <-"https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FGDP.csv"
+eduurl <-"https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FEDSTATS_Country.csv"
+download.file(gdpurl, destfile="G:/gdp.csv")
+download.file(eduurl, destfile="G:/edu.csv")
+gdp <- read.csv("G:/gdp.csv", skip = 4, nrow=190, stringsAsFactors = FALSE)
+#skip the first 4 rows before reading data
+edu <- read.csv("G:/edu.csv", stringsAsFactors = FALSE)
+#if drop the "skip = 4, nrow = 190", then the result turns to 224, why?
+mergedata <- merge(gdp, edu, by.x='X', by.y='CountryCode')
+nrow(mergedata)
+View(mergedata)
+library(dplyr)
+arrangedata <- arrange(mergedata, desc(X.1))
+arrangedata[13, "X.3"]
+```
 
 ## Question 4
 What is the average GDP ranking for the "High income: OECD" and "High income: nonOECD" group?
 
+**Answer:**
+```r
+group_income <- group_by(mergedata, as.factor(Income.Group))
+summarise(group_income, avg = mean(X.1, na.rm=TRUE))
+```
 
 ## Question 5
 Cut the GDP ranking into 5 separate quantile groups. Make a table versus Income.Group. How many countries
 are Lower middle income but among the 38 nations with highest GDP?
 
+**Answer:**
+```r
+install.packages("Hmisc")
+library(Hmisc)
+mergedata$X.4 <- cut2(mergedata$X.1, g = 5)
+table(mergedata$X.4, mergedata$Income.Group)
+```
