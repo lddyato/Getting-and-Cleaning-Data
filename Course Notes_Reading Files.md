@@ -186,3 +186,98 @@ h5read("example.h5", "foo/A")
 ```
 SUMMARY: hdf5 can be used to optimize reading / writing from disk in R. see tutorial in (I saved copy of pdf): <http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf>
 also <http://www.hdfgroup.org/HDF5>
+
+## Reading data from the web - readLines()
+**Webscraping:** programatically extracting data from the HTML code of websites
+* It can be a great way to get data, but be careful, sometimes against the terms of service
+* attempting to read too many pages too quickly can get your IP address blocked
+* robots.txt are at for example: http://www.facebook.com.br/robots.txt
+
+**To read a html file, use readLines():**
+```r
+con = url("http://scholar.google.com/citations?user=HI-I6C0AAAAJ&h1=en")
+htmlCode = readLines(con)
+htmlCode # will print all on one line... you will want to parse this, eg with XML package:
+close(con) #remember to close the connections
+```
+
+**Parsing with XML**
+```r
+library(XML)
+url <- "http://scholar.google.com/citations?user=HI-I6C0AAAAJ&h1=en"
+html <- htmlTreeParse(url, useInternalNodes=T)
+xpathSApply(html, "//title", xmlValue)
+xpathSApply(html, "//td[@id='col-citedby']", xmlValue)
+```
+
+**Alternative : Using Get from the httr package**
+```r
+library(httr)
+html2 = GET(url)
+content2 = content(html2,as="text")
+parsedHtml = htmlParse(content2,asText=TRUE)
+xpathSApply(parsedHtml, "//title", xmlValue)
+```
+**Accessing websites with passwords**
+```r
+pg1 = GET("http://httpbin.org/basic-auth/user/passwd")
+#you will get 401 status message if you print result, whereas it will be 200 status with:
+pg2 = GET("http://httpbin.org/basic-auth/user/passwd", authenticate("user", "passwd"))
+names(pg2) # not names of users; 'content' is where the html code is
+#Using handles: allows you to save authentication across additional calls, cookies get saved
+google = handle("http://google.com")
+pg1 = GET(handle=google,path="/")
+pg2 = GET(handle=google,path="search")
+```
+see the cran for more on httr
+also see R Bloggers for web scraping examples: http://www.r-bloggers.com/?s=Web+Scraping
+
+## Reading from APIs
+* APIs are where you can download data, with GET requests with specific url arguments
+* you'll need to create a developer account for each one, eg for Twitter: <https://dev.twitter.com/docs/api/1/get/blocks/blocking>
+* creating a Twitter app: https?//dev.twitter.com/apps
+
+**Accessing Twitter from R**
+```r
+myapp = oauth_app("twitter", key = "yourKey", secret="yourSecret") # first parameter 'twitter' is your choice to make
+sig = sign_oauth1.0(myapp, token="yourToken", token_secret="yourTokenSecret")
+homeTL = GET("https://api.twitter.com/1.1/statuses/home_timeline.json", sig) # note how you're passing authentication here
+```
+**then to convert json object**
+```r
+json1 = content(homeTL) # recognizes and extracts json data
+json2 = jsonlite::fromJSON(toJSON(json1)) # reformats json extract as a data frame
+json2[1,1:4]
+```
+**what url to use?** 
+see twitter documentation (<dev.twitter.com/docs/api/1.1/get/search/tweets, also has parameters list>. <dev.twitter.com/docs/api/1.1/overview> is not just your user info but more globally)
+**In general, look at (Twitter) documentation**
+* httr allows `GET, POST, PUT, DELETE` when authorized
+* you can authenticate with a user name or a password
+* most modern APIs use something like oauth for authentication
+* httr works well with Facebook, Google, Twitter, Github, etc.
+* this lecture demo is modeled from one on Github.
+
+## Reading from other sources
+**Google "data storage mechanism R package", eg. "MySQL R package"**   
+**Interacting more directly with files**     
+* file: open connection to text file
+* url: open conn to url
+* gzfile, bzfile (for .bz2): open connection to a .gz/.bz2 file 
+* ?connections for more info.
+* REMEMBER TO CLOSE CONNECTIONS
+* 
+**Foreign package**    
+loads data from Minitab, S, SAS, SPSS< Stata, Systat, Weka, etc.
+basically, `read.foo`, like`read.arff (Weka), read.xport(SAS), read.dta (Stata), read.mtp (Minitab), read.octave (Octave), read.spss (SPSS)`
+**other database packages**    
+`RPostgreSQL, RODBC (interfaces to databases incl MySQL, MS Access), RMongo`
+
+## Reading images 
+jpeg, readbitmap, png, EBImage (Bioconductor)
+
+##reading GIS data
+rdgal, rgeos, raster
+
+##reading music data
+from mp3s: tuneR, seewave
