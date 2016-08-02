@@ -84,5 +84,6 @@ names(rootNode)
 rootNode[[1]] # directly access parts of the XML document
 rootNode[[1]][[1]]
 xmlSApply(rootNode, xmlValue) # programmatically extract parts of the file
-xpathSApply(rootNode, "//name", xmlValue)
-
+xpathSApply(rootNode, "//name", xmlValue) # get the name and prices on the menu
+xpathSApply(rootNode, "//prices", xmlValue)
+```
