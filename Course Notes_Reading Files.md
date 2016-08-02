@@ -87,3 +87,15 @@ xmlSApply(rootNode, xmlValue) # programmatically extract parts of the file
 xpathSApply(rootNode, "//name", xmlValue) # get the name and prices on the menu
 xpathSApply(rootNode, "//prices", xmlValue)
 ```
+## Reading JSON
+```r
+library(jsonlite)
+jsonData <- fromJSON("http://api.github.com/users/jtleek/repos")
+names(jsonData)
+names(jsonData$owner)
+names(jsonData$owner$login) # nested objects in JSON
+# writing data frames to JSON
+myjson <- toJSON(iris, pretty = TRUE)
+cat(myjson)
+# convert back to JSON
+iris2 <- fromJSON(myjson)
