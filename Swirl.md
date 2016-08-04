@@ -211,7 +211,7 @@ The students dataset actually has three variables: grade, sex and count.
 students <- data.frame(grade = toupper(letters[1:5]), male = c(1, 5, 5, 5, 7), female = c(5, 0, 2, 5, 4))
 ```
 
-*Step 2:**    
+**Step 2:**    
 To tidy the students data, we need to have one column for rach of these three variables.  
 `gather` in tidyr package takes multiple columns and collapses into key-value pairs, duplicating all other columns as needed.   
 You use gather() when you notice that you have columns that are not variables.
@@ -228,22 +228,27 @@ Create data set “student2” to satisfy the type two condition.(1 and 2 means 
 students2 <- data.frame(grade = LETTERS[1:5], male_1 = c(3, 6, 7, 4, 1), female_1 = c(4, 4, 4, 0, 1), male_2 = c(3, 3, 3, 8, 2), female_2 = c(4, 5, 8, 1, 7))
 ```
 **Step 2:**  
+students2 suffers from the same messy data problem of having column headers that are values (male_1, female_1, etc.) and not variable names (sex, class, and count). However, it also has multiple variables stored in each column (sex and class), which is another common symptom of messy data.  
+
 Using gather to stack columns of students2, like we just did with students.
 
 ```r
-res <- gather(students2, sex_class, count, - grade)
+res <- gather(students2, sex_class, count, - grade) #This time, name the 'key' column sex_class and the 'value' column count. 
 ```
 **Step 3:**   
-separate function is for the purpose of separating one column into multiple columns.
+separate function is for the purpose of separating one column into multiple columns.  
+separate() was able to figure out on its own how to separate the sex_class column. Unless you request otherwise with the 'sep' argument, it splits on non-alphanumeric values. In other words, it assumes that the values are separated by something other than a letter or number (in this case, an underscore.)
+
 ```r
 separate(data = res, col = sex_class, into = c("sex", "class"))
+#separate(res, sex_class, c("sex", "class"))
 ```
 **Step 4:** Using chain %>% function to do step 2-3.
 ```r
 library(dplyr)
 students2 %>%
         gather(sex_class, count, - grade) %>%
-        separate(col = sex_class, into = c("sex", "class")) %>%
+        separate(col = sex_class, c("sex", "class")) %>%
         print
 ```
 
@@ -266,8 +271,13 @@ attributes(students3$class3) <- list(levels = LETTERS[1:5], class = "factor")
 attributes(students3$class4) <- list(levels = LETTERS[1:5], class = "factor")
 attributes(students3$class5) <- list(levels = LETTERS[1:5], class = "factor")
 ```
+The first variable, name, is already a column and should remain as it is.   
+The headers of the last five columns, class1 through class5, are all different values of what should be a class variable.   
+The values in the test column, midterm and final, should each be its own variable containing the respective grades for each student.
+
 **Step 2:**   
-gether() function should be used to gether class.
+Call gather() to gather the columns class1 through class5 into a new variable called class.  
+The 'key' should be class, and the 'value' should be grade.
 ```r
 students3 %>%
         gather(class, grade, class1:class5, na.rm = TRUE) %>%
@@ -287,7 +297,7 @@ Set the class to be 1:5.
 students3 %>% 
         gather(class, grade, class1:class5, na.rm = TRUE) %>%
         spread(test, grade) %>% 
-        mutate(class = extract_numeric(class)) %>%
+        mutate(class = extract_numeric(class)) %>% #want the values in the class column to simply be 1, 2, ..., 5 and not class1, #class2, ..., class5
         print
 ```
 **Type four: multiple types of observational units are stored in the same table.**
@@ -302,20 +312,27 @@ class = c(1, 5, 1, 3, 2, 4, 2, 5, 3, 4),
 midterm = c("B", "A", "A", "B", "D", "A", "C", "B", "C", "A"), 
 final = c("B", "C", "C", "C", "E", "C", "A", "A", "C", "A"))
 ```
+At first glance, there doesn't seem to be much of a problem with students4.   
+All columns are variables and all rows are observations. However, notice that each id, name, and sex is repeated twice,   
+which seems quite redundant. This is a hint that our data contains multiple observational units in a single table.
+
 **Step 2:**    
-At first glance, there doesn’t seem to be much of a problem with students4. All columns are variables and all rows are observations. However, notice that each id, name, and sex is repeated twice, which seems quite redundant. This is a hint that our data contains multiple observational units in a single table.Our solution will be to break students4 into two separate tables – one containing basic student information (id, name, and sex) and the other containing grades (id, class, midterm, final).
+Our solution will be to break students4 into two separate tables – one containing basic student information (id, name, and sex) and the other containing grades (id, class, midterm, final).
 ```r
 student_info <- students4 %>%
         select(id, name, sex) %>%
-        unique %>%
+        unique %>%  #remove duplicate rows from student_info.
         print
 gradebook <- students4 %>%
         select(id, class, midterm, final) %>%
         print
 ```
+Note that we left the id column in both tables. In the world of relational databases, 'id' is called our 'primary key' since it allows us to connect each student listed in student_info with their grades listed in gradebook. Without a unique identifier, we might not know how the tables are related. (In this case, we could have also used the name variable, since each student happens to have a unique name.)
+
 **Type five: a single observation unit is stored in multiple tables.**
 
-**Step 1:** Create dataset satisfying type five condition.
+**Step 1:**   
+Create dataset satisfying type five condition.
 ```r
 # passed
 passed <- data.frame(name = c("Brian", "Roger", "Roger", "Karen"), class = c(1, 2, 5, 4), final = c("B", "A", "A", "A"))
@@ -326,13 +343,106 @@ failed <- data.frame(name = as.character(c("Brian", "Sally", "Sally", "Jeff", "J
 attributes(failed$final) <- list(levels = LETTERS[1:5], class = "factor")
 failed$name <- as.character(failed$name)
 ```
-**Step 2:** using mutate() to add a column to passed dataset.
+**Step 2:**    
+using mutate() to add a column to passed dataset.  
 ```r
 passed <- mutate(passed, status = "passed")
 failed <- mutate(failed, status = "failed")
 ```
-**Step 3:** bind passed and failed datasets.
+**Step 3:**    
+bind passed and failed datasets.
 ```r
 bind_rows(passed, failed)
 ```
 
+**Brings five type together to deal with real data.**
+
+**Step 1:**  
+Create data set “sat”. The SAT is a popular college-readiness exam in the United States that consists of three sections: critical reading, mathematics, and writing.
+
+```r
+sat <- data.frame(score_range = c("700-800", "600-690", "500-590", "400-490", "300-390", "200-290"), 
+                  read_male = c(40151, 121950, 227141, 241554, 113568, 30728),
+                  read_fem = c(38898, 126084, 259553, 296793, 133473, 29154),
+                  read_total = c(79049, 24803, 486694, 539347, 247041, 59882),
+                  math_male = c(74461, 162564, 233141, 204670, 82468, 18788),
+                  math_fem = c(46040, 133954, 257678, 288696, 131025, 16562),
+                  math_toal = c(120501, 196518, 490819, 493366, 213493, 45350),
+                  write_male = c(31574, 100963, 202326, 262623, 146106, 32500),
+                  write_fem = c(39101, 125368, 247239, 302933, 144381, 24933),
+                  write_total = c(60675, 226331, 449565, 565556, 2904787, 57433))
+sat <- tbl_df(sat)
+```
+**Step 2:**
+ Accomplish the following three goals:
+```r
+sat %>% 
+        select(-contains("total")) %>%  
+        #select() all columns that do NOT contain the word "total",since if we have the male and female data, we can always
+        #recreate the total count in a separate column, if we want it
+        gather(part_sex, count, -score_range) %>% 
+        #gather() all columns EXCEPT score_range, using key = part_sex and value = count.
+        separate(col = part_sex, into = c("part", "sex")) %>%
+        print
+```
+**Step 3:**  
+```r
+sat %>%
+        select(-contains("total")) %>%
+        gather(part_sex, count, -score_range) %>%
+        separate(part_sex, c("part", "sex")) %>%
+        group_by(part, sex)  %>%
+        mutate(total = sum(count),
+               prop = count/ total) %>% 
+        print
+```
+
+##Dates and Times with lubridate
+
+**step 1: load package and deal with date.**
+```r
+lct <- Sys.getlocale("LC_TIME")
+Sys.setlocale("LC_TIME", "C")
+library(lubridate)
+this_day <- today()
+this_day
+year(this_day)
+month(this_day)
+day(this_day)
+wday(this_day)
+wday(this_day, label = TRUE)
+```
+**Step 2: deal with date and time combinations.**
+```r
+this_moment <- now()
+this_moment
+hour(this_moment)
+minute(this_moment)
+second(this_moment)
+```
+**Step 3: ymd() dmy() hms() ymd_hms(), etc.**
+```r
+my_date <- ymd("1989-05-17")
+my_date
+class(my_date)
+update(this_moment, hours = 8, minutes = 34, seconds = 55)
+this_moment
+this_moment <- update(this_moment, hours = 15, minutes = 54)
+this_moment
+```
+**Step 4: Different time zone.**
+```r
+nyc <- now("America/New_York")
+depart <- nyc + days(2)
+depart
+depart <- update(depart, hours = 17, minutes = 34)
+arrive <- depart + hours(15) + minutes(50)
+arrive <- with_tz(arrive, "Asia/Hong_Kong")
+```
+**Step 5: Time difference.**
+```r
+last_time <- mdy("June 17, 2008", tz = "Singapore") 
+how_long <- interval(last_time, arrive)
+how_long
+as.period(how_long)
+```
