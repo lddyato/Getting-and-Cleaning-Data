@@ -146,37 +146,33 @@ but note that whether these have a special meaning depends on the context.
 
 **Character classes**    
 
-1: [:digit:] or \d equivalent to [0-9].  
-2: [:lower:] equivalent to [a-z].  
-3: [:upper:] equivalent to [A-Z].  
-4: [:alpha:] equivalent to [a-zA-Z] or [[:lower:][:upper:]].  
-5: [:alnum:] equivalent to [A-z0-9] or [[:digit:][:alpha:]].  
-6: \w equivalent to [[:apnum]_] or [A-z0-9_].  
-7: \W equivalent [^A-z0-9].  
-8: [:xdigit:] matches 0 1 2 3 4 5 6 7 8 9 A B C D E F a b c d e f.  
-9: [:blank:] matches space or tab.  
-10: [:space:] marches tab, newline, vertical tab, form feed, carriage return, space.   
-11: \s space ” “.     
-12: \S not space.   
-13: [:punct] matches ! " # $ % & ’ ( ) * + , - . / : ; < = > ? @ [ ] ^ _ ` { | } ~.   
-14: [:graph:] equivalent to [[:alnum:][:punct:]].   
-15: [:print:] equivalent to [[:alnum:][:punct:]\\s].   
-16: [:cntrl:] control characters, like \n or \r, [\x00-\x1F\x7F].    
+1: `[:digit:]` or \d equivalent to [0-9].  
+2: `[:lower:]` equivalent to [a-z].  
+3: `[:upper:]` equivalent to [A-Z].  
+4: `[:alpha:]` equivalent to [a-zA-Z] or [[:lower:][:upper:]].  
+5: `[:alnum:]` equivalent to [A-z0-9] or [[:digit:][:alpha:]].  
+6: `\w` equivalent to [[:apnum]_] or [A-z0-9_].  
+7: `\W` equivalent [^A-z0-9].  
+8: `[:xdigit:]` matches 0 1 2 3 4 5 6 7 8 9 A B C D E F a b c d e f.  
+9: `[:blank:]` matches space or tab.  
+10: `[:space:]` marches tab, newline, vertical tab, form feed, carriage return, space.   
+11: `\s` space ” “.     
+12: `\S` not space.   
+13: `[:punct]` matches ! " # $ % & ’ ( ) * + , - . / : ; < = > ? @ [ ] ^ _ ` { | } ~.   
+14: `[:graph:]` equivalent to [[:alnum:][:punct:]].   
+15: `[:print:]` equivalent to [[:alnum:][:punct:]\\s].   
+16: `[:cntrl:]` control characters, like \n or \r, [\x00-\x1F\x7F].    
 
 
 **R function summary:**          
-*1: Identify match to a pattern:*      
-
+1: Identify match to a pattern:     
 `grep(..., value = FALSE), grepl(), stringr::str_detect()`.   
-
-*2: Extract match to a pattern:*      
-
+2: Extract match to a pattern:      
 `grep(..., value = TRUE), stringr::str_extract(), stringr::str_extract_all()`.   
-
-*3: Locate pattern within a string, i.e. give the start position of matched patterns.*       
+3: Locate pattern within a string, i.e. give the start position of matched patterns.       
 `regexpr(), gregexpr(), stringr::str_locate(), string::str_locate_all()`.        
-*4: Replace a pattern:*     
+4: Replace a pattern:     
 `sub(), gsub(), stringr::str_replace(), stringr::str_replace_all()`.         
-*5: Split a string using a pattern:*     
+5: Split a string using a pattern:     
 `strsplit(), stringr::str_split()`.       
 
