@@ -23,15 +23,16 @@ fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessTy
 download.file(fileUrl, destfile = "./data/cameras.csv")
 cameraData <- read.csv("./data/cameras.csv")
 names(cameraData)
-tolower(names(cameraData))1
+tolower(names(cameraData))
+toupper(names(cameraData))
 ```
 **Step 2:**   
 Fixing character vectors strsplit function. 
 * Good for automatically splitting variable names.
-* Important paramters:x and split
+* Important paramters:*x and split*
 
 ```r
-splitNames <- strsplit(names(cameraData), "\\.")
+splitNames <- strsplit(names(cameraData), "\\.") #use this escape character because the period is a reserved character
 splitNames[[5]]
 splitNames[[6]]
 ```
