@@ -42,7 +42,13 @@ content(req)
 req <- with_config(gtoken, GET("https://api.github.com/rate_limit"))
 stop_for_status(req)
 getdata <- content(req)
-
+# OR:
+gtoken <- config(token = github_token)
+req <- GET("https://api.github.com/rate_limit", gtoken)
+stop_for_status(req)
+json1 = content(req) # Extract out the content from the request
+json2 = jsonlite::fromJSON(jsonlite::toJSON(json1)) #convert the list to json
+json2[json2$full_name == "jtleek/datasharing", ]$created_at
 ```
 
 
@@ -68,8 +74,16 @@ sqldf("select * from acs")
 **sqldf("select pwgtp1 from acs where AGEP < 50")**
 
 sqldf("select pwgtp1 from acs")
-
-
+```r
+# load package: sqldf is short for SQL select for data frame.
+library(sqldf)
+# 1. download data 
+download.file(url = "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv", destfile = "./data/acs.csv")
+# 2. read data
+acs <- read.csv("./data/acs.csv")
+# 3. select using sqldf
+#sqldf("select pwgtp1 from acs where AGEP<50", drv='SQLite')
+```
 
 ## Question 3
 Using the same data frame you created in the previous problem,  
@@ -82,6 +96,11 @@ sqldf("select distinct pwgtp1 from acs")
 sqldf("select unique * from acs")
 
 sqldf("select AGEP where unique from acs")
+```r
+result <- sqldf("select distinct AGEP from acs", drv = "SQLite")
+nrow(result)
+length(unique(acs$AGEP))
+```
 
 ## Question 4
 How many characters are in the 10th, 20th, 30th and 100th lines of HTML from this page:
@@ -105,3 +124,11 @@ Read this data set into R and report the sum of the numbers in the fourth of the
 Original source of the data: <http://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for>
 
 (Hint this is a fixed width file format)
+```r
+# 1. read data
+data <- read.fwf(file = "https://d396qusza40orc.cloudfront.net/getdata%2Fwksst8110.for",
+                 skip = 4,
+                 widths = c(12, 7,4, 9,4, 9,4, 9,4))
+# 2. result
+sum(as.numeric(data[,4]))
+```
