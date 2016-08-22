@@ -14,6 +14,10 @@ Create a logical vector that identifies the households on greater than 10 acres 
 which(agricultureLogical)
 
 What are the first 3 values that result?
+* 59, 460, 474   
+* 125, 238,262  
+* 403, 756, 798  
+* 25, 36, 45   
 
 **Answer:**
 ```r
@@ -31,6 +35,11 @@ Using the jpeg package read in the following picture of your instructor into R
 <https://d396qusza40orc.cloudfront.net/getdata%2Fjeff.jpg>
 
 Use the parameter native=TRUE. What are the 30th and 80th quantiles of the resulting data? (some Linux systems may produce an answer 638 different for the 30th quantile)  
+
+* -16776430 -15390165  
+* -10904118 -10575416   
+* -15259150 -10575416  
+* 10904118 -594524  
 
 **Answer:**
 ```r
@@ -58,6 +67,12 @@ Original data sources:
 <http://data.worldbank.org/data-catalog/GDP-ranking-table>
 
 <http://data.worldbank.org/data-catalog/ed-stats>  
+* 234 matches, 13th country is Spain  
+* 190 matches, 13th country is Spain  
+* 190 matches, 13th country is St. Kitts and Nevis  
+* 189 matches, 13th country is St. Kitts and Nevis  
+* 189 matches, 13th country is Spain   
+* 234 matches, 13th country is St. Kitts and Nevis   
 
 **Answer:**
 ```r
@@ -79,7 +94,13 @@ arrangedata[13, "X.3"]
 
 ## Question 4
 What is the average GDP ranking for the "High income: OECD" and "High income: nonOECD" group?
-
+* 30, 37  
+* 23, 30  
+* 32.96667, 91.91304  
+* 23, 45  
+* 23.966667, 30.91304  
+* 133.72973, 32.96667   
+ 
 **Answer:**
 ```r
 group_income <- group_by(mergedata, as.factor(Income.Group))
@@ -89,6 +110,10 @@ summarise(group_income, avg = mean(X.1, na.rm=TRUE))
 ## Question 5
 Cut the GDP ranking into 5 separate quantile groups. Make a table versus Income.Group. How many countries
 are Lower middle income but among the 38 nations with highest GDP?
+* 13
+* 12
+* 5
+* 0
 
 **Answer:**
 ```r
