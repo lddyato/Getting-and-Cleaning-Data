@@ -3,9 +3,9 @@
 `getwd(), setwd()`
 
 Relative versus absolute paths:
-* **Relative**-setwd("./data"), setwd("../")
-* **Absolute**-setwd("Users/jtleek/data/")
-* In Windows, `setwd("C:\\Users\\Andrew\\Downloads")
+* **Relative**-`setwd("./data"), setwd("../")`
+* **Absolute**-`setwd("Users/jtleek/data/")`
+* In Windows, `setwd("C:\\Users\\Andrew\\Downloads")`
 
 ## checking for and creating drectories
 ```r
@@ -71,9 +71,10 @@ read.delim(file, header = TRUE, sep = "\t", quote="\"", dec=".",
 read.delim2(file, header = TRUE, sep = "\t", quote="\"", dec=",",
             fill = TRUE, comment.char="", ...)
 ```
-## Reading local flat files- read.table()
-Similar to `**read.table**` but faster and more convenient. 
-All controls such as sep, colClasses and nrows are automatically detected. bit64::integer64 types are also detected and read directly without needing to read as character before converting.
+## fread() VS read.table()
+Similar to **`read.table()`** but faster and more convenient. 
+All controls such as sep, colClasses and nrows are automatically detected. 
+bit64::integer64 types are also detected and read directly without needing to read as character before converting.
 
 ```r
 fread(input, sep="auto", sep2="auto", nrows=-1L, header="auto", na.strings="NA",
@@ -86,7 +87,13 @@ showProgress=getOption("datatable.showProgress"),   # default: TRUE
 data.table=getOption("datatable.fread.datatable")   # default: TRUE
 )
 ```
-
+```r
+> fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06pid.csv"
+> download.file(fileUrl, destfile="D:./pid.csv", method="curl")
+> library(data.table)
+> DT <- fread("D:./pid.csv")
+# DT <- read.table("./pid.csv", sep = ",", header = TRUE) 
+```
 ## Reading Excel files
 still probably the mose widely used format for sharing data
 ```r
