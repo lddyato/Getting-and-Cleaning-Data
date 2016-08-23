@@ -22,13 +22,19 @@ The four things you should have in going from raw to tidy:
 3. code book describing variables and values in tidy data set (metadata)  
 4. explicit and exact recipe you used to go from 1 to 2 and 3   
 
-**raw data**  
-* Ran no sortware on the data  
+**1. raw data**  
+* The strange binary file your measurement machine spits out
+* The unformatted Excel file with 10 worksheets the company you contracted with sent you
+* The complicated JSON data you got from scraping the Twitter API
+* The hand-entered numbers you collected looking through a microscope
+
+You know the raw data is in the right form if you:
+* Ran no software on the data  
 * You did not manipulate any of the numbers in the data  
 * You did not remove any data from the data set  
 * You did not summarize any data in any way
 
-**The tidy data**
+**2. The tidy data**
 + Each variable you measure should be in one column
 + Each different ovservation of that variable should be in a diferent row
 + There should be one table for each "kind" of variable
@@ -39,7 +45,7 @@ The four things you should have in going from raw to tidy:
 - Make variable names human readable AgeAtDiagnosis instead of AgeDx
 - In general data should be saved in one file per table.
 
-**Code Book**
+**3. Code Book**
 * Information about the variables (including units) in the data set not contained in the tidy data
 * Information about the summary choices you made
 * Information about the experimental study design you used
@@ -49,7 +55,7 @@ The four things you should have in going from raw to tidy:
 * There should be a section called "Study design" that has a thorough description of how you collected the data.
 * There must be a section called "Code book" that describes each variable and its units.
 
-**The instruction list**
+**4. The instruction list**
 * Ideally a computer script
 * The input for the script is the raw data
 * The output is the processed, tidy data
