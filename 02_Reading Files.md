@@ -71,6 +71,21 @@ read.delim(file, header = TRUE, sep = "\t", quote="\"", dec=".",
 read.delim2(file, header = TRUE, sep = "\t", quote="\"", dec=",",
             fill = TRUE, comment.char="", ...)
 ```
+## Reading local flat files- read.table()
+Similar to `**read.table**` but faster and more convenient. 
+All controls such as sep, colClasses and nrows are automatically detected. bit64::integer64 types are also detected and read directly without needing to read as character before converting.
+
+```r
+fread(input, sep="auto", sep2="auto", nrows=-1L, header="auto", na.strings="NA",
+stringsAsFactors=FALSE, verbose=getOption("datatable.verbose"), autostart=1L,
+skip=0L, select=NULL, drop=NULL, colClasses=NULL,
+integer64=getOption("datatable.integer64"),         # default: "integer64"
+dec=if (sep!=".") "." else ",", col.names, 
+check.names=FALSE, encoding="unknown", strip.white=TRUE, 
+showProgress=getOption("datatable.showProgress"),   # default: TRUE
+data.table=getOption("datatable.fread.datatable")   # default: TRUE
+)
+```
 
 ## Reading Excel files
 still probably the mose widely used format for sharing data
