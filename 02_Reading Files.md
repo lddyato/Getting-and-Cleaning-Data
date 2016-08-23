@@ -125,6 +125,28 @@ In general it is adviced to store your data in either a database or in (.csv) or
 * `//node` Node at any level
 * node[@attr-name] Node with an attribute name
 * node[@attr-name='bob'] Node with an attribute name attr-name='bob'
+
+```r
+# The following is the doc 
+<?xml version="1.0" encoding="UTF-8"?> #By adding this line this R code is doc, by deleting this line is a rootNode.
+<breakfast_menu>
+<food>
+<name>Belgian Waffles</name>
+<price>$5.95</price>
+<description>
+Two of our famous Belgian Waffles with plenty of real maple syrup
+</description>
+<calories>650</calories>
+</food>
+<food>
+<name>Strawberry Belgian Waffles</name>
+<price>$7.95</price>
+<description>
+Light Belgian waffles covered with strawberries and whipped cream
+</description>
+<calories>900</calories>
+</food>
+```
 ```r
 library(XML)
 fileurl <- "http://www.w3schools.com/xml/simple.xml"
@@ -132,8 +154,9 @@ doc <- xmlTreeParse(fileurl, useInternal = TRUE)
 rootNode <- xmlRoot(doc) #wraps whole doc
 xmlName(rootNode) # OUtput is "breakfast menu"
 names(rootNode)  # tells nested elements, output is food food food ... food
-rootNode[[1]] # directly access parts of the XML document,like extracting from a list, eg, <food> ...</food>
+rootNode[[1]] # directly access parts of the XML document,like extracting from a list, eg, the whole <food> ...</food> section
 rootNode[[1]][[1]] # <name>Belgian Waffles</name>
+rootNode[[1]][[2]] # <price>$5.95</price> 
 xmlSApply(rootNode, xmlValue) # programmatically extract parts of the file, loops through to get all xmlValues, basically all text
 #more specifically, use Xpath language-`/node`: top level node; `//node`: node at any level   
 xpathSApply(rootNode, "//name", xmlValue) # get the name on the menu
@@ -189,17 +212,21 @@ ucscDb <- dbConnect(MySQL(), user="genome", host="genome-mysql.cse.ucsc.edu") # 
 result <- dbGetQuery(ucscDb, "show databases"); dbDisconnect(ucscDb); # 'show databases' is SQL not R code
 # connecting to hg19, one of the databases, and listing tables
 hg19 <- dbConnect(MySQL(), user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
-allTables <- dbListTables(hg19);
-length(allTables); allTables[1:5]; # over 10949 tables
+allTables <- dbListTables(hg19)
+length(allTables) # over 10949 tables
+allTables[1:5] # the first 5 tables
 dbListFields(hg19,"affyU133Plus2") # dimensions of a specific table "affyU133Plus2"
-dbGetQuery(hg19, "select count(*) from affyU133Plus2")
+dbGetQuery(hg19, "select count(*) from affyU133Plus2") # 58463 columns in table "affyU133Plus2"
 affyData <- dbReadQuery(hg19, "affyU133Plus2") #read from the table
 head(affyData) # first 6 rows
 query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3") 
 # select a specific subset and stores query remotely in the database
-affyMis <- fetch(query); quantile(affyMis$misMatches)
-affyMisSmall <- fetch(query, n=10); dbClearResult(query); # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward
-dbDisconnect(hg19)
+affyMis <- fetch(query) 
+quantile(affyMis$misMatches)
+affyMisSmall <- fetch(query, n=10) 
+dbClearResult(query) # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward
+dim(affyMisSmall) # 10  22
+dbDisconnect(hg19) # Dont forget to close the connection
 ```
 *Note*
 * do not delete, add or join things from ensembl. Only select.
@@ -256,11 +283,21 @@ also <http://www.hdfgroup.org/HDF5>
 * attempting to read too many pages too quickly can get your IP address blocked
 * robots.txt are at for example: http://www.facebook.com.br/robots.txt
 
-**To read a html file, use readLines():**
+**Getting data off webpages - readLines():**
 ```r
 con = url("http://scholar.google.com/citations?user=HI-I6C0AAAAJ&h1=en")
 htmlCode = readLines(con)
 htmlCode # will print all on one line... you will want to parse this, eg with XML package:
+# [1] "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"                                                                        
+# [2] "<breakfast_menu>"                                                                                                  
+# [3] "\t<food>"                                                                                                          
+# [4] "\t\t<name>Belgian Waffles</name>"                                                                                  
+# [5] "\t\t<price>$5.95</price>"                                                                                          
+# [6] "\t\t<description>Two of our famous Belgian Waffles with plenty of real maple syrup</description>"                  
+## [7] "\t\t<calories>650</calories>"                                                                                      
+# [8] "\t</food>"                                                                                                         
+# ...
+# [33] "</breakfast_menu>" 
 close(con) #remember to close the connections
 ```
 
@@ -268,18 +305,22 @@ close(con) #remember to close the connections
 ```r
 library(XML)
 url <- "http://scholar.google.com/citations?user=HI-I6C0AAAAJ&h1=en"
-html <- htmlTreeParse(url, useInternalNodes=T)
+html <- htmlTreeParse(url, useInternalNodes=TRUE)
+html
+#<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<?xml version="1.0" encoding="UTF-8"?><html><body><breakfast_menu><food><name>Belgian Waffles</name><price>$5.95</price><description>Two of our famous Belgian Waffles with plenty of real maple syrup</description><calories>650</calories></food> .......
+# The output is in one line
 xpathSApply(html, "//title", xmlValue)
 xpathSApply(html, "//td[@id='col-citedby']", xmlValue)
 ```
 
-**Alternative : Using Get from the httr package**
+**Alternative : Using `Get` from the httr package**
 ```r
 library(httr)
 html2 = GET(url)
 content2 = content(html2,as="text")
 parsedHtml = htmlParse(content2,asText=TRUE)
-xpathSApply(parsedHtml, "//title", xmlValue)
+xpathSApply(parsedHtml, "//title", xmlValue) #"Jeff Leek - Google Scholar Citations"
 ```
 **Accessing websites with passwords**
 ```r
