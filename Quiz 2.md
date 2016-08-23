@@ -36,19 +36,17 @@ github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
 gtoken <- config(token = github_token)
 req <- GET("https://api.github.com/rate_limit", gtoken)
 stop_for_status(req)
-content(req)
 
-# OR:
-req <- with_config(gtoken, GET("https://api.github.com/rate_limit"))
-stop_for_status(req)
-getdata <- content(req)
-# OR:
-gtoken <- config(token = github_token)
-req <- GET("https://api.github.com/rate_limit", gtoken)
-stop_for_status(req)
-json1 = content(req) # Extract out the content from the request
-json2 = jsonlite::fromJSON(jsonlite::toJSON(json1)) #convert the list to json
+#5. Extract out the content from the request
+json1 = content(req)
+json2 = jsonlite::fromJSON(jsonlite::toJSON(json1)) #convert the list to json (data frame)
+#jsonlite::toJSON(json1) put json1 into one looooooong line
 json2[json2$full_name == "jtleek/datasharing", ]$created_at
+#[[1]]
+#[1] "2013-11-07T13:25:07Z"
+json2[json2$full_name == "jtleek/datasharing", ]$pushed_at
+#[[1]]
+#[1] "2016-08-16T08:38:51Z"
 ```
 
 
