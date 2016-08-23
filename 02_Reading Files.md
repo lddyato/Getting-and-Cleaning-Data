@@ -423,3 +423,4 @@ data <- read.fwf(file = "https://d396qusza40orc.cloudfront.net/getdata%2Fwksst81
                  skip = 4,
                  widths = c(12, 7, 4, 9, 4, 9, 4, 9, 4))
 ```
+? how to change the varaible names
