@@ -407,3 +407,19 @@ rdgal, rgeos, raster
 
 ##reading music data
 from mp3s: tuneR, seewave
+
+## Reading a table of fixed width formatted data into a data.frame-read.fwf()
+```r
+read.fwf(file, widths, header = FALSE, sep = "\t",
+         skip = 0, row.names, col.names, n = -1,
+         buffersize = 2000, fileEncoding = "", ...)
+```
+Multiline records are concatenated to a single line before processing.   
+Fields that are of zero-width or are wholly beyond the end of the line in file are replaced by NA.      
+Negative-width fields are used to indicate columns to be skipped, e.g., -5 to skip 5 columns.    
+```r
+# 1. read data
+data <- read.fwf(file = "https://d396qusza40orc.cloudfront.net/getdata%2Fwksst8110.for",
+                 skip = 4,
+                 widths = c(12, 7, 4, 9, 4, 9, 4, 9, 4))
+```
