@@ -1,13 +1,18 @@
 # Downloading and Reading Data
 ## Get or set working directory
 `getwd(), setwd()`
+
+Relative versus absolute paths:
+* **Relative**-setwd("./data"), setwd("../")
+* **Absolute**-setwd("Users/jtleek/data/")
+* In Windows, `setwd("C:\\Users\\Andrew\\Downloads")
+
 ## checking for and creating drectories
 ```r
-
 if (!file.exists("directoryName") {
 dir.create("directoryName") }
 ```
-## Download a file from the web
+## Getting data from the internet-download.file()
 ```r
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl") 
@@ -30,15 +35,45 @@ fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessTyp
 download.file(fileurl, destfile="./data/cameras.csv", method="curl")   
 # if the url starts with *https* on Mac, you may need to set method="curl"
 dateDownloaded <- date() # Be sure to record when you downloaded
-cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE)
+cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE) 
+cameraData <- read.csv("./data/cameras.csv") #read.csv sets sep="," and header = TRUE
+head(cameraData)
 ```
 *Some more important parameters*   
 * `quote` - you can tell R whether there are any quoted values quote = "" means no quotes
-* `na.strings` - set the character that represents a missing value
-* `nrows` - how many rows to read of the file
-* `skip` - number of lines to skip before starting to read
+* `na.strings` - set the character that represents a missing value. The default is `na.strings=“NA”`, `WQ1=read.table("wq.txt",header=T,na.strings=9999)` # 9999 reprents missing values or "." reprents missing value in SAS
+* `nrows` - how many rows to read of the file. The default is `nrows = -1`
+* `skip` - number of lines to skip before starting to read. The skipped rows include the variable numbers. so in general, 
+it always used by combining with the `col.names`, for example, `WQ4=read.table("wq.txt",header=T,skip=2,col.names=c("A","B","C","D"))`
+* `check.names` - renames the repeated variable names, such as, B and B.1 if you set `check.names=T`
+* `dec` - decimal. The default is `dec=”."`. If the data values reprents with comma, set `dec=","` 
+```r
+read.table(file, header = FALSE, sep = "", quote = "\"'",
+           dec = ".", row.names, col.names,
+           as.is = !stringsAsFactors,
+           na.strings = "NA", colClasses = NA, nrows = -1,
+           skip = 0, check.names = TRUE, fill = !blank.lines.skip,
+           strip.white = FALSE, blank.lines.skip = TRUE,
+           comment.char = "#",
+           allowEscapes = FALSE, flush = FALSE,
+           stringsAsFactors = default.stringsAsFactors(),
+           fileEncoding = "", encoding = "unknown", text)
+
+read.csv(file, header = TRUE, sep = ",", quote="\"", dec=".",
+         fill = TRUE, comment.char="", ...)
+
+read.csv2(file, header = TRUE, sep = ";", quote="\"", dec=",",
+          fill = TRUE, comment.char="", ...)
+
+read.delim(file, header = TRUE, sep = "\t", quote="\"", dec=".",
+           fill = TRUE, comment.char="", ...)
+
+read.delim2(file, header = TRUE, sep = "\t", quote="\"", dec=",",
+            fill = TRUE, comment.char="", ...)
+```
 
 ## Reading Excel files
+still probably the mose widely used format for sharing data
 ```r
 if (!file.exists("data") {
 dir.create("data") }
@@ -48,6 +83,7 @@ download.file(fileurl, destfile="./data/cameras.csv", method="curl")
 dateDownloaded <- date() # Be sure to record when you downloaded
 libaray(xlsx)
 cameraData <- read.xlsx("./data/cameras.xlsx", sheetIndex = 1, header = TRUE)
+head(cameraData)
 ```
 **Reading sepcific rows and columns**
 ```r
@@ -70,48 +106,75 @@ In general it is adviced to store your data in either a database or in (.csv) or
 * Particularly widely used in internet applications
 * Extracting XML is the basis for most web scraping
 * Components:    
-> Markup - labels that give the text structure    
-> Content- the actual text of the document    
+ + Markup - labels that give the text structure    
+ + Content- the actual text of the document    
 
 **Tags, elements and attributes**
-* tags correspond to general labels, example: <section> blah blah </section> - section is an element
-* empty tags eg <line-break />  
-* attributes are components of the label, eg <img src = "jeff.jpg" ... />
+* tags correspond to general labels, 
+ + Start tages: <section> 
+ + End tages </section> 
+ + Empty tages <line-break />
+* Elements are specific examples of tags
+ + <Greeting> Hello, world </Greeting>
+* Attributes are components of the label
+ + <img src = "jeff.jpg" alt="instructor"/>
+ + <step number="3"> Connect A to B. </step>
 
+**XPath**
+* `/node` Top level node
+* `//node` Node at any level
+* node[@attr-name] Node with an attribute name
+* node[@attr-name='bob'] Node with an attribute name attr-name='bob'
 ```r
 library(XML)
 fileurl <- "http://www.w3schools.com/xml/simple.xml"
 doc <- xmlTreeParse(fileurl, useInternal = TRUE)
-#xmlTreeParse does not support https... use instead:
-#library(XML)
-#library(RCurl)
-#fileURL <- "..."
-#xmlFile <- getURL(fileURL)
 rootNode <- xmlRoot(doc) #wraps whole doc
-xmlName(rootNode) # eg, breakfast menu
-names(rootNode)  # tells nested elements
-rootNode[[1]] # directly access parts of the XML document,like extracting from a list
-rootNode[[1]][[1]]
+xmlName(rootNode) # OUtput is "breakfast menu"
+names(rootNode)  # tells nested elements, output is food food food ... food
+rootNode[[1]] # directly access parts of the XML document,like extracting from a list, eg, <food> ...</food>
+rootNode[[1]][[1]] # <name>Belgian Waffles</name>
 xmlSApply(rootNode, xmlValue) # programmatically extract parts of the file, loops through to get all xmlValues, basically all text
 #more specifically, use Xpath language-`/node`: top level node; `//node`: node at any level   
-xpathSApply(rootNode, "//name", xmlValue) # get the name and prices on the menu
-xpathSApply(rootNode, "//prices", xmlValue)
+xpathSApply(rootNode, "//name", xmlValue) # get the name on the menu
+xpathSApply(rootNode, "//prices", xmlValue) # get the prices on the menu
 ```
+```r
+fileurl <- "http://espn.go.com/nf1/team/_/name/bal/baltimore-ravens"
+doc <- htmlTreeParse(fileurl, useInternal = TRUE)
+scores <- xpathSApply(doc, "//li[@class='score']", xmlValue)
+teams <- xpathSApply(doc, "//li[@class='team-name']", xmlValue)
+```
+
+xmlTreeParse does not support https... use instead:
+```r
+library(XML)
+library(RCurl)
+fileURL <- "http://www.w3schools.com/xml/simple.xml"
+xmlFile <- getURL(fileURL)
+```
+
 ## Reading JSON
-* structured, lightweight, common. Javascript Object Notation
-* data stored as numbers, strings, boolean, arrays, objects
+* Javascript Object Notation
+* Lightweight data storage
+* Common format for data from application programming interfaces (APIs)
+* Similar structures to XML but differenet syntax/format
+* data stored as 
+ + numbers(double), 
+ + strings(souble quoted), 
+ + boolean(TRUE or FALSE),
+ + arrays(ordered, comma separated enclosed in square brackets[]), 
+ + objects(unordered, comma separated collection of key value pairs in curley brackets{})
 
 ```r
 library(jsonlite)
-jsonData <- fromJSON("http://api.github.com/users/jtleek/repos") # puts in dataframe or nested dataframe
+jsonData <- fromJSON("http://api.github.com/users/jtleek/repos") # reading data from JSON, puts in dataframe or nested dataframe
 names(jsonData)
 names(jsonData$owner)
 names(jsonData$owner$login) # nested objects in JSON
-# writing data frames to JSON
-myjson <- toJSON(iris, pretty = TRUE)
+myjson <- toJSON(iris, pretty = TRUE) # writing data frames to JSON
 cat(myjson)  # see structure
-# convert back to JSON
-iris2 <- fromJSON(myjson)
+iris2 <- fromJSON(myjson) # convert back to JSON
 ```
 
 ## Reading mySQL
