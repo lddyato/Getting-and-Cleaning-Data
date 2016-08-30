@@ -81,23 +81,28 @@ use filter function to select all rows for which the package variable is equal t
 ```r
 filter(cran, package == "swirl")
 ```
-##Step 11: filter multiple rows.(note that the conditions are separated by commas.)
+##Step 11
+filter multiple rows.(note that the conditions are separated by commas.)
 ```r
 filter(cran, r_version == "3.1.1", country == "US")
 ```
-##Step 12: filter rows corresponding to users in “IN” running an R version that is less than or equal to “3.0.2”
+##Step 12
+filter rows corresponding to users in “IN” running an R version that is less than or equal to “3.0.2”
 ```r
 filter(cran, country == "IN", r_version <= "3.0.2")
 ```
-##Step 13: filter rows corresponding to users in “US” or “IN”.
+##Step 13
+filter rows corresponding to users in “US” or “IN”.
 ```r
 filter(cran, country == "US" | country == "IN")
 ```
-##Step 14: filter rows for which size is strictly greater than 100500 and r_os equals “linux-gnu”
+##Step 14
+filter rows for which size is strictly greater than 100500 and r_os equals “linux-gnu”
 ```r
 filter(cran, size > 100500, r_os == "linux-gnu")
 ```
-##Step 15: filter the rows for which the r_version is not missing.
+##Step 15
+filter the rows for which the r_version is not missing.
 ```r
 filter(cran, !is.na(r_version))
 ```
@@ -160,7 +165,8 @@ summarize the mean(size) to by_package
 ```r
 summarize(by_package, mean(size))
 ```
-##Step 3: Summarize more on by_package
+##Step 3
+Summarize more on by_package
 ```r
 # Compute four values, in the following order, from
 # the grouped data:
@@ -334,26 +340,31 @@ Create a data frame “students” that satisfies the type one condition. The st
 ```r
 students <- data.frame(grade = toupper(letters[1:5]), male = c(1, 5, 5, 5, 7), female = c(5, 0, 2, 5, 4))
 ```
-###Step 2: To tidy the students data, we need to have one column for rach of these three variables.(gather in tidyr package takes multiple columns and collapses into key-value pairs, duplicating all other columns as needed. You use gather() when you notice that you have columns that are not variables.)(Note that the minus sign before grade, which says we want to gather all columns except grade.)
+###Step 2
+To tidy the students data, we need to have one column for rach of these three variables.(gather in tidyr package takes multiple columns and collapses into key-value pairs, duplicating all other columns as needed. You use gather() when you notice that you have columns that are not variables.)(Note that the minus sign before grade, which says we want to gather all columns except grade.)
 ```r
 library(tidyr)
 gather(students, sex, count, -grade)
 ```
 ##Type two: multiple variables are stored in one columnm.
 
-###Step 1: Create data set “student2” to satisfy the type two condition.(1 and 2 means class)
+###Step 1
+Create data set “student2” to satisfy the type two condition.(1 and 2 means class)
 ```r
 students2 <- data.frame(grade = LETTERS[1:5], male_1 = c(3, 6, 7, 4, 1), female_1 = c(4, 4, 4, 0, 1), male_2 = c(3, 3, 3, 8, 2), female_2 = c(4, 5, 8, 1, 7))
 ```
-###Step 2: Using gather to stack columns of students2, like we just did with students.
+###Step 2
+Using gather to stack columns of students2, like we just did with students.
 ```r
 res <- gather(students2, sex_class, count, - grade)
 ```
-###Step 3: separate function is for the purpose of separating one column into multiple columns.
+###Step 3
+separate function is for the purpose of separating one column into multiple columns.
 ```r
 separate(data = res, col = sex_class, into = c("sex", "class"))
 ```
-###Step 4: Using chain %>% function to do step 2-3.
+###Step 4
+Using chain %>% function to do step 2-3.
 ```r
 library(dplyr)
 students2 %>%
@@ -363,7 +374,8 @@ students2 %>%
 ```
 ##Type three: Variables are stored in both rows and columns.
 
-###Step 1: Create dataset ‘students3’ satisfying type three condition.
+###Step 1
+Create dataset ‘students3’ satisfying type three condition.
 ```r
 students3 <- data.frame(name = rep(c("Sally", "Jeff", "Roger", "Karen", "Brian"), each = 2), test = rep(c("midterm", "final"), 5), class1 = c("A", "C", rep(NA, 6), "B", "B"), class2 = c(rep(NA, 2), "D", "E", "C", "A", rep(NA, 4)), class3 = c("B", "C", rep(NA, 4), rep("C", 2), rep(NA, 2)), class4 = c(rep(NA, 2), "A", "C", rep(c(NA, "A", NA), each = 2)), class5 = c(rep(NA, 4), "B", "A", rep(NA, 2), "A", "C"))
 # set attributes to the five column same
@@ -373,20 +385,23 @@ attributes(students3$class3) <- list(levels = LETTERS[1:5], class = "factor")
 attributes(students3$class4) <- list(levels = LETTERS[1:5], class = "factor")
 attributes(students3$class5) <- list(levels = LETTERS[1:5], class = "factor")
 ```
-###Step 2: gether() function should be used to gether class.
+###Step 2
+gether() function should be used to gether class.
 ```r
 students3 %>%
         gather(class, grade, class1:class5, na.rm = TRUE) %>%
         print
 ```
-###Step 3: spread() function should be used to spread test column. (Spread a key-value pair across multiple columns)
+###Step 3
+spread() function should be used to spread test column. (Spread a key-value pair across multiple columns)
 ```r
 students3 %>%
         gather(class, grade, class1:class5, na.rm = TRUE) %>%
         spread(test, grade) %>%
         print
 ```
-###Step 4: Set the class to be 1:5.
+###Step 4
+Set the class to be 1:5.
 ```r
 students3 %>% 
         gather(class, grade, class1:class5, na.rm = TRUE) %>%
@@ -397,11 +412,13 @@ students3 %>%
 
 ##Type four: multiple types of observational units are stored in the same table.
 
-###Step 1: Create a dataset satisfying type four condition.
+###Step 1
+Create a dataset satisfying type four condition.
 ```r
 students4 <- data.frame(id = rep(c(168, 588, 710, 731, 908), each = 2), name = rep(c("Brian", "Sally", "Jeff", "Roger", "Karen"), each = 2), sex = c(rep(c("F", "M"), each = 2), rep(c("M", "F", "M"), each = 2)), class = c(1, 5, 1, 3, 2, 4, 2, 5, 3, 4), midterm = c("B", "A", "A", "B", "D", "A", "C", "B", "C", "A"), final = c("B", "C", "C", "C", "E", "C", "A", "A", "C", "A"))
 ```
-###Step 2: At first glance, there doesn’t seem to be much of a problem with students4. All columns are variables and all rows are observations. However, notice that each id, name, and sex is repeated twice, which seems quite redundant. This is a hint that our data contains multiple observational units in a single table.Our solution will be to break students4 into two separate tables – one containing basic student information (id, name, and sex) and the other containing grades (id, class, midterm, final).
+###Step 2
+At first glance, there doesn’t seem to be much of a problem with students4. All columns are variables and all rows are observations. However, notice that each id, name, and sex is repeated twice, which seems quite redundant. This is a hint that our data contains multiple observational units in a single table.Our solution will be to break students4 into two separate tables – one containing basic student information (id, name, and sex) and the other containing grades (id, class, midterm, final).
 ```r
 student_info <- students4 %>%
         select(id, name, sex) %>%
@@ -413,7 +430,8 @@ gradebook <- students4 %>%
 ```
 ##Type five: a single observation unit is stored in multiple tables.
 
-###Step 1: Create dataset satisfying type five condition.
+###Step 1
+Create dataset satisfying type five condition.
 ```r
 # passed
 passed <- data.frame(name = c("Brian", "Roger", "Roger", "Karen"), class = c(1, 2, 5, 4), final = c("B", "A", "A", "A"))
@@ -424,20 +442,23 @@ failed <- data.frame(name = as.character(c("Brian", "Sally", "Sally", "Jeff", "J
 attributes(failed$final) <- list(levels = LETTERS[1:5], class = "factor")
 failed$name <- as.character(failed$name)
 ```
-###Step 2: using mutate() to add a column to passed dataset.
+###Step 2
+using mutate() to add a column to passed dataset.
 ```r
 passed <- mutate(passed, status = "passed")
 failed <- mutate(failed, status = "failed")
 ```
 
-###Step 3: bind passed and failed datasets.
+###Step 3
+bind passed and failed datasets.
 ```r
 bind_rows(passed, failed)
 ```
 
 ##Brings five type together to deal with real data.
 
-###Step 1: Create data set “sat”.
+###Step 1
+Create data set “sat”.
 ```r
 sat <- data.frame(score_range = c("700-800", "600-690", "500-590", "400-490", "300-390", "200-290"), 
                   read_male = c(40151, 121950, 227141, 241554, 113568, 30728),
@@ -451,7 +472,7 @@ sat <- data.frame(score_range = c("700-800", "600-690", "500-590", "400-490", "3
                   write_total = c(60675, 226331, 449565, 565556, 2904787, 57433))
 sat <- tbl_df(sat)
 ```
-###Step 2:
+###Step 2: select(), gather(), separate()
 ```r
 # Accomplish the following three goals:
 #
@@ -475,7 +496,8 @@ sat %>%
         separate(col = part_sex, into = c("part", "sex")) %>%
         print
 ```
-###Step 3: group_by() function to group the data by part and sex. And mutate() function to add two new columns, whose values automativally computed group-by-group.
+###Step 3
+group_by() function to group the data by part and sex. And mutate() function to add two new columns, whose values automativally computed group-by-group.
 ```r
 # Append two more function calls to accomplish the following:
 #
