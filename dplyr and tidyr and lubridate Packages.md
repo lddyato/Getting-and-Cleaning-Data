@@ -1,15 +1,15 @@
-# Swirl
-## Manipulating Data with dplyr Package
+
+# Manipulating Data with `dplyr` Package
 
 `dplyr` is a fast and powerful R package written by Hadley Wickham and Romain Francois.   
 The dplyr philosophy is to have small functions that each do one thing well.  
 
 One unique aspect of dplyr is that the same set of tools allow you to work with tabular data from a cariety of sources, including
 
-*data frame*
-*data tables*
-*databases*
-*multidimensional arrays*
+* data frame
+* data tables
+* databases
+* multidimensional arrays
 
 **Step 1: download data and load it to R**
 ```r
@@ -122,13 +122,15 @@ top_unique_sorted <- arrange(top_unique, desc(unique))
 View(top_unique_sorted)
 ```
 ## Grouping and Chaining with `dplyr`  
+The main idea behind grouping data is that you want to break up your dataset into groups of rows based on the values of one or more variables. THe group_by() function is reponsible for doing this.
 
 **summarize2.R**   
+group cran by the package variable and store the result in a new variable called by_package. (At the top of the output above, you’ll see ‘Groups:package’. Eveything looks the same, but now any operation we apply to the grouped data will tabke place on a per package basis.)
 ```r
 by_package <- group_by(cran, package)
 pack_sum <- summarize(by_package,
-                      count = n(),
-                      unique = n_distinct(ip_id),
+                      count = n(), #contains the total number of rows
+                      unique = n_distinct(ip_id), #gives the total number of unique downloads for each package.
                       countries = n_distinct(country),
                       avg_bytes = mean(size))
 top_countries <- filter(pack_sum, countries > 60)
@@ -186,7 +188,7 @@ cran %>% select(ip_id, country, package, size) %>% mutate(size_mb = size / 2^20)
 cran %>% select(ip_id, country, package, size) %>% mutate(size_mb = size / 2^20) %>% filter(size_mb <= 0.5) %>% print
 cran %>% select(ip_id, country, package, size) %>% mutate(size_mb = size / 2^20) %>% filter(size_mb <= 0.5) %>% arrange(desc(size_mb)) %>% print
 ```
-##Tidying Data with tidyr
+#Tidying Data with `tidyr`
 Tidy data is formatted in a standard way that facilitates exploration and analysis and works seamlessly with other tidy data tools.   
 Specifically, tidy data satisfies three conditions:
 
@@ -386,6 +388,7 @@ sat %>%
         print
 ```
 **Step 3:**  
+group_by() function to group the data by part and sex. And mutate() function to add two new columns, whose values automativally computed group-by-group.
 ```r
 sat %>%
         select(-contains("total")) %>%
@@ -397,7 +400,7 @@ sat %>%
         print
 ```
 
-##Dates and Times with lubridate
+#Dates and Times with lubridate
 
 **step 1: load package and deal with date.**
 ```r
