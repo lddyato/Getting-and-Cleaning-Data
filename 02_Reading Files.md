@@ -165,7 +165,7 @@ In general it is adviced to store your data in either a database or in (.csv) or
 
 # Example XML file
 
-<img class=center src=../../assets/img/03_ObtainingData/xmlexample.png height=450>
+<img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/xmlexample.png", height=450>
 
 [http://www.w3schools.com/xml/simple.xml](http://www.w3schools.com/xml/simple.xml)
 
@@ -284,7 +284,7 @@ xpathSApply(rootNode,"//price",xmlValue)
 **Another example**
 
 
-<img rsc=https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravens.png height=450>
+<img rsc="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravens.png", height=450>
 
 [http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens](http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens)
 
@@ -293,7 +293,7 @@ xpathSApply(rootNode,"//price",xmlValue)
 
 **Viewing the source**
 
-<img class=center src=../../assets/img/03_ObtainingData/ravenssource.png height=450>
+<img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravenssource.png", height=450>
 
 [http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens](http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens)
 
