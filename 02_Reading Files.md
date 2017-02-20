@@ -892,16 +892,16 @@ json2[1,1:4]
 
 # Reading from other sources
 
-Google "data storage mechanism R package", eg. "MySQL R package"**   
+Google "data storage mechanism R package", eg. "MySQL R package"   
 
-## Interacting more directly with files**     
+## Interacting more directly with files     
 * file: open connection to text file
 * url: open conn to url
 * gzfile, bzfile (for .bz2): open connection to a .gz/.bz2 file 
 * *?connections* for more info.
 * <redtext>Remember to close connections </redtext>
 
-## Foreign package**    
+## Foreign package  
 * Loads data from Minitab, S, SAS, SPSS, Stata,Systat
 * Basic functions _read.foo_
   * read.arff (Weka)
@@ -912,7 +912,7 @@ Google "data storage mechanism R package", eg. "MySQL R package"**
   * read.xport (SAS)
 * See the help page for more details [http://cran.r-project.org/web/packages/foreign/foreign.pdf](http://cran.r-project.org/web/packages/foreign/foreign.pdf)
 
-## Examples of other database packages**
+## Examples of other database packages
 
 * RPostresSQL provides a DBI-compliant database connection from R. Tutorial-[https://code.google.com/p/rpostgresql/](https://code.google.com/p/rpostgresql/), help file-[http://cran.r-project.org/web/packages/RPostgreSQL/RPostgreSQL.pdf](http://cran.r-project.org/web/packages/RPostgreSQL/RPostgreSQL.pdf)
 * RODBC provides interfaces to multiple databases including PostgreQL, MySQL, Microsoft Access and SQLite. Tutorial - [http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf](http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf), help file - [http://cran.r-project.org/web/packages/RODBC/RODBC.pdf](http://cran.r-project.org/web/packages/RODBC/RODBC.pdf)
