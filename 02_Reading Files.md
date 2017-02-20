@@ -18,7 +18,7 @@ dir.create("directoryName") }
 * Important parameters are *url, destfile, method*
 * Useful for downloading tab-delimited, csv, and other files.
 
-http://data.baltimorecity.gov/Transportation/Baltimore-Fixed-Speed-Cameras/dz54-2aru
+<http://data.baltimorecity.gov/Transportation/Baltimore-Fixed-Speed-Cameras/dz54-2aru>
 
 ```r
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
@@ -28,26 +28,29 @@ list.files("./data")    ## [1] "cameras.csv"
 dateDownloaded <- date() # Be sure to record when you downloaded
 ```
 
-## Reading local flat files- read.table()
+# Reading local flat files- read.table()
 * This is the main function for reading data into R
 * Flexible and robust but requires more parameters
 * Reads the data into RAM - big data can cause problems
 * Important parameters `file, header, sep, row.names, nrows`
 * Related: `read.csv(), read.csv2()`
 
+## Download the file to load
 ```r
-# Download the file to load
 if (!file.exists("data") {
 dir.create("data") }
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl")   
 # if the url starts with *https* on Mac, you may need to set method="curl"
 dateDownloaded <- date() # Be sure to record when you downloaded
-# Loading flat files - read.table()
+```
+## Loading flat files - read.table()
+```r
 cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE) # If there is no last two parameters, you'll get errors
 cameraData <- read.csv("./data/cameras.csv") #read.csv sets sep="," and header = TRUE
 head(cameraData)
 ```
+
 * This is the main function for reading data into R
 * Flexible and robust but requires more parameters
 * Reads the data into RAM - big data can cause problems
@@ -107,7 +110,7 @@ data.table=getOption("datatable.fread.datatable")   # default: TRUE
 > DT <- fread("D:./pid.csv")
 # DT <- read.table("./pid.csv", sep = ",", header = TRUE) 
 ```
-## Reading Excel files
+# Reading Excel files
 still probably the mose widely used format for sharing data
 ```r
 if (!file.exists("data") {
@@ -119,7 +122,6 @@ libaray(xlsx)
 cameraData <- read.xlsx("./data/cameras.xlsx", sheetIndex = 1, header = TRUE)
 head(cameraData)
 ```
-
 ```
                          address direction      street  crossStreet               intersection
 1       S CATON AVE & BENSON AVE       N/B   Caton Ave   Benson Ave     Caton Ave & Benson Ave
@@ -136,7 +138,7 @@ head(cameraData)
 5 (39.3283410623, -76.5953594625)
 6 (39.3068045671, -76.5593167803)
 ```
-**Reading sepcific rows and columns**
+## Reading sepcific rows and columns**
 ```r
 colIndex <- 2:3
 rowIndex <- 1:4
@@ -157,7 +159,7 @@ cameraDataSubset <- read.xlsx("./data/cameras.xlsx", sheetIndex = 1, colIndex = 
 
 In general it is adviced to store your data in either a database or in (.csv) or (.tab/txt) as they are easier to distribute
 
-## Reading XML
+# Reading XML
 * Extensible markup language
 * Frequently used to store structured data
 * Particularly widely used in internet applications
@@ -168,7 +170,7 @@ In general it is adviced to store your data in either a database or in (.csv) or
 
 [http://en.wikipedia.org/wiki/XML](http://en.wikipedia.org/wiki/XML)
 
-**Tags, elements and attributes**
+## Tags, elements and attributes
 
 * Tags correspond to general labels
   * Start tags `<section>`
@@ -183,14 +185,14 @@ In general it is adviced to store your data in either a database or in (.csv) or
 
 [http://en.wikipedia.org/wiki/XML](http://en.wikipedia.org/wiki/XML)
 
-# Example XML file
+## Example XML file
 
 <img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/xmlexample.png", height=450>
 
 [http://www.w3schools.com/xml/simple.xml](http://www.w3schools.com/xml/simple.xml)
 
+### Read the file into R
 ```r
-# Read the file into R
 library(XML)
 fileUrl <- "http://www.w3schools.com/xml/simple.xml"
 doc <- xmlTreeParse(fileUrl,useInternal=TRUE)
@@ -201,22 +203,16 @@ xmlName(rootNode)
 ```
 [1] "breakfast_menu"
 ```
-
 ```r
 names(rootNode)
 ```
-
 ```
   food   food   food   food   food 
 "food" "food" "food" "food" "food" 
 ```
-
-
----
-
-
+### Directly access parts of the XML document
 ```r
-rootNode[[1]] # Directly access parts of the XML document
+rootNode[[1]] 
 ```
 
 ```
@@ -235,8 +231,9 @@ rootNode[[1]][[1]]
 ```
 <name>Belgian Waffles</name> 
 ```
+### Programatically extract parts of the file
 ```r
-xmlSApply(rootNode,xmlValue)  # Programatically extract parts of the file
+xmlSApply(rootNode,xmlValue) 
 ```
 
 ```
@@ -252,7 +249,7 @@ xmlSApply(rootNode,xmlValue)  # Programatically extract parts of the file
                         "Homestyle Breakfast$6.95Two eggs, bacon or sausage, toast, and our ever-popular hash browns950" 
 ```
 
-**XPath**
+*XPath*
 
 * _/node_ Top level node
 * _//node_ Node at any level
@@ -261,8 +258,9 @@ xmlSApply(rootNode,xmlValue)  # Programatically extract parts of the file
 
 Information from: [http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf](http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf)
 
+### Get the items on the menu and prices
 ```r
-xpathSApply(rootNode,"//name",xmlValue)  # Get the items on the menu and prices
+xpathSApply(rootNode,"//name",xmlValue)  
 ```
 
 ```
@@ -278,20 +276,20 @@ xpathSApply(rootNode,"//price",xmlValue)
 [1] "$5.95" "$7.95" "$8.95" "$4.50" "$6.95"
 ```
 
-**Another example**
+## Another XML example
 
 
 <img rsc="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravens.png",height=450>
 
 [http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens](http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens)
 
-**Viewing the source**
+### Viewing the source
 
 <img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravenssource.png", height=450>
 
 [http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens](http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens)
 
-**Extract content by attributes**
+### Extract content by attributes
 
 ```r
 fileUrl <- "http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens"
@@ -313,7 +311,7 @@ teams
 [13] "Minnesota"   "Detroit"     "New England" "Cincinnati" 
 ```
 
-**Notes and further resources**
+## Notes and further resources
 
 * Official XML tutorials [short](http://www.omegahat.org/RSXML/shortIntro.pdf), [long](http://www.omegahat.org/RSXML/Tour.pdf)
 * [An outstanding guide to the XML package](http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf)
@@ -326,7 +324,7 @@ fileURL <- "http://www.w3schools.com/xml/simple.xml"
 xmlFile <- getURL(fileURL)
 ```
 
-## Reading JSON
+# Reading JSON
 * Javascript Object Notation
 * Lightweight data storage
 * Common format for data from application programming interfaces (APIs)
@@ -338,12 +336,12 @@ xmlFile <- getURL(fileURL)
  + arrays(ordered, comma separated enclosed in square brackets[]), 
  + objects(unordered, comma separated collection of key value pairs in curley brackets{})
 
-**Example**
+## Example
 
 <img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/githubjson.png">
 
+### reading data from JSON {jsonlite package}, puts in dataframe or nested dataframe
 ```r
-# reading data from JSON {jsonlite package}, puts in dataframe or nested dataframe
 library(jsonlite)
 jsonData <- fromJSON("http://api.github.com/users/jtleek/repos") 
 names(jsonData)
@@ -380,8 +378,10 @@ jsonData$name
 [21] "sva"            "swfdr"          "talks"          "testrepository" "tornado"       
 [26] "tsp-devel"      "tspreg"        
 ```
+
+### nested objects in JSON
 ```r
-names(jsonData$owner) # nested objects in JSON
+names(jsonData$owner) 
 ```
 
 ```
@@ -401,8 +401,9 @@ jsonData$owner$login
 [11] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
 [21] "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek" "jtleek"
 ```
+### writing data frames to JSON
 ```r
-myjson <- toJSON(iris, pretty=TRUE) # writing data frames to JSON
+myjson <- toJSON(iris, pretty=TRUE) 
 cat(myjson)
 ```
 
@@ -434,8 +435,9 @@ cat(myjson)
  
 [http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/](http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/)
 
+### Convert back to JSON
 ```r
-iris2 <- fromJSON(myjson)  ## Convert back to JSON
+iris2 <- fromJSON(myjson) 
 head(iris2)
 ```
 ```
@@ -450,66 +452,79 @@ head(iris2)
 
 [http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/](http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/)
 
-## Reading mySQL
+## Further resources
+
+* [http://www.json.org/](http://www.json.org/)
+* A good tutorial on jsonlite - [http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/](http://www.r-bloggers.com/new-package-jsonlite-a-smarter-json-encoderdecoder/)
+* [jsonlite vignette](http://cran.r-project.org/web/packages/jsonlite/vignettes/json-mapping.pdf)
+
+# Reading mySQL
 * free, widely used open source db software
 * structure: databases, tables (data frame) within, fields (columns) within; each row is a record
-* install MySQL, then install RMySQL 
+* install MySQL<http://dev.mysql.com/doc/refman/5.7/en/installing.html>, then install RMySQL 
   + On a Mac: `install.packages("RMySQL")` 
   + On Windows:
     - Official instructions - http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL (may be useful for Mac/UNIX users as well)
     - Potentially useful guide - http://www.ahschulz.de/2013/07/23/installing-rmysql-under-windows/
 
-**Example-UCSC database**
+##Example-UCSC database
 
 UCSC database, http://genome.ucsc.edu/ (web-facing, use sparingly, do NOT delete, add, join etc and class probably will overload so don't use)
 
 <img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ucscmysql.png">
 
-## Connecting and listing databases
-
-
+### Connecting and listing databases
 ```r
-# connecting and listing databases
-ucscDb <- dbConnect(MySQL(),user="genome", host="genome-mysql.cse.ucsc.edu") 
-result <- dbGetQuery(ucscDb,"show databases;") # 'show databases' is SQL not R code
+ucscDb <- dbConnect(MySQL(),user="genome", host="genome-mysql.cse.ucsc.edu")
+result <- dbGetQuery(ucscDb,"show databases;")
 dbDisconnect(ucscDb);
-# [1] TRUE
-result
+```
 
-#               Database
-# 1   information_schema
-# 2              ailMel1
-# 3              allMis1
-# 4              anoCar1
-# 5              anoCar2
-# 6              anoGam1
-# 7              apiMel1
-# 8              apiMel2
-# 9              aplCal1
-# 10             bosTau2
-...  ...  ...  ...  ...
-# 170            tetNig2
-# 171            triMan1
-# 172            tupBel1
-# 173            turTru2
-# 174            uniProt
-# 175            vicPac1
-# 176            vicPac2
-# 177           visiGene
-# 178            xenTro1
-# 179            xenTro2
-# 180            xenTro3
+```
+[1] TRUE
 ```
 
 ```r
-# Connecting to hg19, one of the databases, and listing tables
+result
+```
+
+```
+              Database
+1   information_schema
+2              ailMel1
+3              allMis1
+4              anoCar1
+5              anoCar2
+6              anoGam1
+7              apiMel1
+8              apiMel2
+9              aplCal1
+10             bosTau2
+...  ...  ...  ...  ...
+170            tetNig2
+171            triMan1
+172            tupBel1
+173            turTru2
+174            uniProt
+175            vicPac1
+176            vicPac2
+177           visiGene
+178            xenTro1
+179            xenTro2
+180            xenTro3
+```
+### Connecting to hg19, one of the databases, and listing tables
+```r
 hg19 <- dbConnect(MySQL(),user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
 allTables <- dbListTables(hg19)
 length(allTables) # over 10949 tables
 # [1] 10949
 allTables[1:5] # the first 5 tables
 # [1] "HInv"         "HInvGeneMrna" "acembly"      "acemblyClass" "acemblyPep"  
-dbListFields(hg19,"affyU133Plus2")  ## Get dimensions of a specific table
+```
+### Get dimensions of a specific table
+```r
+dbListFields(hg19,"affyU133Plus2") 
 #  [1] "bin"         "matches"     "misMatches"  "repMatches"  "nCount"      "qNumInsert" 
 #  [7] "qBaseInsert" "tNumInsert"  "tBaseInsert" "strand"      "qName"       "qSize"      
 # [13] "qStart"      "qEnd"        "tName"       "tSize"       "tStart"      "tEnd"       
@@ -517,74 +532,100 @@ dbListFields(hg19,"affyU133Plus2")  ## Get dimensions of a specific table
 dbGetQuery(hg19, "select count(*) from affyU133Plus2") # 58463 columns in table "affyU133Plus2"
 #     count(*)
 # 1    58463
-affyData <- dbReadTable(hg19, "affyU133Plus2") ## Read from the table
+```
+
+### Read from the table
+```r
+affyData <- dbReadTable(hg19, "affyU133Plus2") 
 head(affyData)  # first 6 rows
-#   bin matches misMatches repMatches nCount qNumInsert qBaseInsert tNumInsert tBaseInsert strand
-# 1 585     530          4          0     23          3          41          3         898      -
-# 2 585    3355         17          0    109          9          67          9       11621      -
-# 3 585    4156         14          0     83         16          18          2          93      -
-# 4 585    4667          9          0     68         21          42          3        5743      -
-# 5 585    5180         14          0    167         10          38          1          29      -
-# 6 585     468          5          0     14          0           0          0           0      -
-#          qName qSize qStart qEnd tName     tSize tStart  tEnd blockCount
-# 1  225995_x_at   637      5  603  chr1 249250621  14361 15816          5
-# 2  225035_x_at  3635      0 3548  chr1 249250621  14381 29483         17
-# 3  226340_x_at  4318      3 4274  chr1 249250621  14399 18745         18
-# 4 1557034_s_at  4834     48 4834  chr1 249250621  14406 24893         23
-# 5    231811_at  5399      0 5399  chr1 249250621  19688 25078         11
-# 6    236841_at   487      0  487  chr1 249250621  27542 28029          1
-#                                                                   blockSizes
-# 1                                                          93,144,229,70,21,
-# 2              73,375,71,165,303,360,198,661,201,1,260,250,74,73,98,155,163,
-# 3                 690,10,32,33,376,4,5,15,5,11,7,41,277,859,141,51,443,1253,
-# 4 99,352,286,24,49,14,6,5,8,149,14,44,98,12,10,355,837,59,8,1500,133,624,58,
-# 5                                       131,26,1300,6,4,11,4,7,358,3359,155,
-# 6                                                                       487,
+```
+```
+  bin matches misMatches repMatches nCount qNumInsert qBaseInsert tNumInsert tBaseInsert strand
+1 585     530          4          0     23          3          41          3         898      -
+2 585    3355         17          0    109          9          67          9       11621      -
+3 585    4156         14          0     83         16          18          2          93      -
+4 585    4667          9          0     68         21          42          3        5743      -
+5 585    5180         14          0    167         10          38          1          29      -
+6 585     468          5          0     14          0           0          0           0      -
+         qName qSize qStart qEnd tName     tSize tStart  tEnd blockCount
+1  225995_x_at   637      5  603  chr1 249250621  14361 15816          5
+2  225035_x_at  3635      0 3548  chr1 249250621  14381 29483         17
+3  226340_x_at  4318      3 4274  chr1 249250621  14399 18745         18
+4 1557034_s_at  4834     48 4834  chr1 249250621  14406 24893         23
+5    231811_at  5399      0 5399  chr1 249250621  19688 25078         11
+6    236841_at   487      0  487  chr1 249250621  27542 28029          1
+                                                                  blockSizes
+1                                                          93,144,229,70,21,
+2              73,375,71,165,303,360,198,661,201,1,260,250,74,73,98,155,163,
+3                 690,10,32,33,376,4,5,15,5,11,7,41,277,859,141,51,443,1253,
+4 99,352,286,24,49,14,6,5,8,149,14,44,98,12,10,355,837,59,8,1500,133,624,58,
+5                                       131,26,1300,6,4,11,4,7,358,3359,155,
+6                                                                       487,
                                                                                                  qStarts
-# 1                                                                                    34,132,278,541,611,
-# 2                        87,165,540,647,818,1123,1484,1682,2343,2545,2546,2808,3058,3133,3206,3317,3472,
-# 3                   44,735,746,779,813,1190,1195,1201,1217,1223,1235,1243,1285,1564,2423,2565,2617,3062,
-# 4 0,99,452,739,764,814,829,836,842,851,1001,1016,1061,1160,1173,1184,1540,2381,2441,2450,3951,4103,4728,
-# 5                                                     0,132,159,1460,1467,1472,1484,1489,1497,1856,5244,
-# 6                                                                                                     0,
-# tStarts
-# 1 14361,14454,14599,14968,15795,
-# 2 14381,14454,14969,15075,15240,15543,15903,16104,16853,17054,17232,17492,17914,17988,18267,24736,29320,
-# 3 14399,15089,15099,15131,15164,15540,15544,15549,15564,15569,15580,15587,15628,15906,16857,16998,17049,17492,
-# 4 14406,20227,20579,20865,20889,20938,20952,20958,20963,20971,21120,21134,21178,21276,21288,21298,21653,22492,22551,22559,24059,24215,
-# 5 19688,19819,19845,21145,21151,21155,21166,21170,21177,21535,24923,
-# 6 27542,
-
-query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3") 
-## Select a specific subset and stores query remotely in the database
-affyMis <- fetch(query) 
+1                                                                                    34,132,278,541,611,
+2                        87,165,540,647,818,1123,1484,1682,2343,2545,2546,2808,3058,3133,3206,3317,3472,
+3                   44,735,746,779,813,1190,1195,1201,1217,1223,1235,1243,1285,1564,2423,2565,2617,3062,
+4 0,99,452,739,764,814,829,836,842,851,1001,1016,1061,1160,1173,1184,1540,2381,2441,2450,3951,4103,4728,
+5                                                     0,132,159,1460,1467,1472,1484,1489,1497,1856,5244,
+6                                                                                                     0,
+                                                                                                                                     tStarts
+1                                                                                                             14361,14454,14599,14968,15795,
+2                                     14381,14454,14969,15075,15240,15543,15903,16104,16853,17054,17232,17492,17914,17988,18267,24736,29320,
+3                               14399,15089,15099,15131,15164,15540,15544,15549,15564,15569,15580,15587,15628,15906,16857,16998,17049,17492,
+4 14406,20227,20579,20865,20889,20938,20952,20958,20963,20971,21120,21134,21178,21276,21288,21298,21653,22492,22551,22559,24059,24211,24835,
+5                                                                         19688,19819,19845,21145,21151,21155,21166,21170,21177,21535,24923,
+6                                                                                                                                     27542,
+```
+### Select a specific subset and stores query remotely in the database
+```r
+query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3")
+affyMis <- fetch(query)
 quantile(affyMis$misMatches)
-#   0%  25%  50%  75% 100% 
-#    1    1    2    2    3 
-affyMisSmall <- fetch(query,n=10);  # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward
-dbClearResult(query);
-# [1] TRUE
-dim(affyMisSmall)
-# [1] 10 22
+```
 
-dbDisconnect(hg19)## Don't forget to close the connection!
+```
+  0%  25%  50%  75% 100% 
+   1    1    2    2    3 
+```
+
+```r
+affyMisSmall <- fetch(query,n=10) # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward 
+dbClearResult(query);
+```
+
+```
+[1] TRUE
+```
+
+```r
+dim(affyMisSmall)
+```
+```
+[1] 10 22
+```
+
+### Don't forget to close the connection!
+```r
+dbDisconnect(hg19)
 # [1] TRUE
 ```
 
-*Note*
+## Further resources
 * do not delete, add or join things from ensembl. Only select.
 * be careful with mysql commands 
 * see <http://www.r-bloggers.com/mysql-and-r/>
 * `dbConnect, dbGetQuery, dbListTables, dbListFields, dbReadQuery, dbSendQuery, dbClearResult, fetch (or dbFetch), dbDisconnect`
 * REMEMBER TO CLOSE CONNECTIONS
 
-## Reading from HDF5
+# Reading from HDF5
 * HDF5 for storing large datasets, structural datasets
 * supports range of data types
 * hdf = hierarchical data format
 * groups containing 0 or more data sets and metadata: have a group header with group name and list of attributes; have a group symbol table with a list of objects in group
 * datasets multidimensional array of data elements with metadata: have a header with name, datatype, dataspace, storage layout; have a data array with the data
 * www.hdfgroup.org
+
+## R HDF5 package
 ```r
 source("http://bioconductor.org/biocLite.R")
 biocLite("rhdf5")
@@ -598,76 +639,101 @@ created
 * This lecture is modeled very closely on the rhdf5 tutorial that
 can be found here [http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf](http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf)
 
+## creating groups
 ```r
-#creating groups
 created = h5createGroup("example.h5", "foo")
 created = h5createGroup("example.h5", "bar")
 created = h5createGroup("example.h5", "foo/foobar")
 h5ls(("example.h5") # h5 then ls as in list, this lists files
-#   group   name     otype dclass dim
-# 0     /    baa H5I_GROUP           
-# 1     /    foo H5I_GROUP           
-# 2  /foo foobaa H5I_GROUP 
+```
+```
+  group   name     otype dclass dim
+0     /    baa H5I_GROUP           
+1     /    foo H5I_GROUP           
+2  /foo foobaa H5I_GROUP           
+```
 
-#writing to groups, say A is a matrix, B is an array
+## writing to groups, say A is a matrix, B is an array
+```r
 A = matrix(1:10, nr = 5, nc=2)
 h5write(A, "example.h5", "foo/A") # adds another file in the h5ls in the /foo group
 B = array(seq(0.1, 2.0, by=0.1), dim = c(5, 2, 2))
 attr(B, "scale") <- "liter" 
 h5write(B, "example.h5", "foo/foobaa/B") # adds another file in the h5ls in the /foo/foobar group, B name
 h5ls("example.h5")
-#         group   name       otype  dclass       dim
-# 0           /    baa   H5I_GROUP                  
-# 1           /    foo   H5I_GROUP                  
-# 2        /foo      A H5I_DATASET INTEGER     5 x 2
-# 3        /foo foobaa   H5I_GROUP                  
-# 4 /foo/foobaa      B H5I_DATASET   FLOAT 5 x 2 x 2
+```
+```
+        group   name       otype  dclass       dim
+0           /    baa   H5I_GROUP                  
+1           /    foo   H5I_GROUP                  
+2        /foo      A H5I_DATASET INTEGER     5 x 2
+3        /foo foobaa   H5I_GROUP                  
+4 /foo/foobaa      B H5I_DATASET   FLOAT 5 x 2 x 2
+```
 
-#writing a dataset, say df is a dataframe:
+## writing a dataset, say df is a dataframe
+```r
 df = dataframe(1L:5L, seq(0, 1, length.out = 5), c("ab", "cde", "fghi", "s"), stringsAsFactors = FALSE)
 h5write(df, "example.h5", "df") # adds another file in the h5ls, in top level or root group, named df
 h5ls("example.h5")
-#         group   name       otype   dclass       dim
-# 0           /    baa   H5I_GROUP                   
-# 1           /     df H5I_DATASET COMPOUND         5
-# 2           /    foo   H5I_GROUP                   
-# 3        /foo      A H5I_DATASET  INTEGER     5 x 2
-# 4        /foo foobaa   H5I_GROUP                   
-# 5 /foo/foobaa      B H5I_DATASET    FLOAT 5 x 2 x 2
+```
+```
+        group   name       otype   dclass       dim
+0           /    baa   H5I_GROUP                   
+1           /     df H5I_DATASET COMPOUND         5
+2           /    foo   H5I_GROUP                   
+3        /foo      A H5I_DATASET  INTEGER     5 x 2
+4        /foo foobaa   H5I_GROUP                   
+5 /foo/foobaa      B H5I_DATASET    FLOAT 5 x 2 x 2
+```
 
-#reading data:
+## reading data
+```r
 readA = h5read("example.h5", "foo/A")
 readB = h5read("example.h5", "foo/foobaa/B")
 readdf = h5read("example.h5", "df")
-#     [,1] [,2]
-# [1,]    1    6
-# [2,]    2    7
-# [3,]    3    8
-# [4,]    4    9
-# [5,]    5   10
+```
+```
+     [,1] [,2]
+[1,]    1    6
+[2,]    2    7
+[3,]    3    8
+[4,]    4    9
+[5,]    5   10
+```
 
-#writing and reading chunks: 
+## writing and reading chunks
+```r
 h5write(c(12,13,14), "example.h5", "foo/A", index = list(1:3,1)) 
 #note this OVERWRITES first 3 rows in col 1 of A:
 # you can use index within h5read() as well
 h5read("example.h5", "foo/A")
-#      [,1] [,2]
-# [1,]   12    6
-# [2,]   13    7
-# [3,]   14    8
-# [4,]    4    9
-# [5,]    5   10
 ```
-SUMMARY: hdf5 can be used to optimize reading / writing from disk in R. see tutorial in (I saved copy of pdf): <http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf>
-also <http://www.hdfgroup.org/HDF5>
+```
+     [,1] [,2]
+[1,]   12    6
+[2,]   13    7
+[3,]   14    8
+[4,]    4    9
+[5,]    5   10
+```
+## Notes and further resources
 
-## Reading data from the web - readLines()
-**Webscraping:** programatically extracting data from the HTML code of websites
+* hdf5 can be used to optimize reading/writing from disc in R
+* The rhdf5 tutorial: 
+  * [http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf](http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf)
+* The HDF group has informaton on HDF5 in general [http://www.hdfgroup.org/HDF5/](http://www.hdfgroup.org/HDF5/)
+
+
+# Reading data from the web - readLines()
+## Webscraping 
+Webscraping: programatically extracting data from the HTML code of websites
+
 * It can be a great way to get data, but be careful, sometimes against the terms of service
 * attempting to read too many pages too quickly can get your IP address blocked
 * robots.txt are at for example: http://www.facebook.com.br/robots.txt
 
-**Getting data off webpages - readLines():**
+## Getting data off webpages - readLines()
 ```r
 con = url("http://scholar.google.com/citations?user=HI-I6C0AAAAJ&hl=en")
 htmlCode = readLines(con)
@@ -701,7 +767,7 @@ htmlCode # will print all on one line... you will want to parse this, eg with XM
 close(con) #remember to close the connections
 ```
 
-**Parsing with XML**
+## Parsing with XML
 
 ```r
 library(XML)
@@ -729,7 +795,7 @@ xpathSApply(html, "//td[@id='col-citedby']", xmlValue)
 [17] "12"       "10"       "10"       "7"        "6"       
 ```
 
-**Alternative : Using `Get` from the httr package**
+## Alternative : Using `Get` from the httr package
 ```r
 library(httr)
 html2 = GET(url)
@@ -741,7 +807,7 @@ xpathSApply(parsedHtml, "//title", xmlValue)
 [1] "Jeff Leek - Google Scholar Citations"
 ```
 
-**Accessing websites with passwords**
+## Accessing websites with passwords
 ```r
 pg1 = GET("http://httpbin.org/basic-auth/user/passwd")
 pg1
@@ -779,34 +845,34 @@ names(pg2)
 [1] "url"         "handle"      "status_code" "headers"     "cookies"     "content"    
 [7] "times"       "config"     
 ```
-**Using handles**
+## Using handles
 ```r
 google = handle("http://google.com")
 pg1 = GET(handle=google,path="/")
 pg2 = GET(handle=google,path="search")
 ```
-**Notes and further resources**
+## Notes and further resources
 
 * R Bloggers has a number of examples of web scraping [http://www.r-bloggers.com/?s=Web+Scraping](http://www.r-bloggers.com/?s=Web+Scraping)
 * The httr help file has useful examples [http://cran.r-project.org/web/packages/httr/httr.pdf](http://cran.r-project.org/web/packages/httr/httr.pdf)
 * See later lectures on APIs
 
-## Reading from APIs
+# Reading from APIs
 
-**Application programming interfaces**
+## Application programming interfaces
 <img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/twitter.png">
 
 * APIs are where you can download data, with GET requests with specific url arguments
 * you'll need to create a developer account for each one, eg for Twitter: <https://dev.twitter.com/docs/api/1/get/blocks/blocking>
 * creating a Twitter app: <https://dev.twitter.com/apps>; Sign in with your Twitter account-My applications--create a new application
 
-**Accessing Twitter from R**
+## Accessing Twitter from R
 ```r
 myapp = oauth_app("twitter", key = "yourKey", secret="yourSecret") # first parameter 'twitter' is your choice to make
 sig = sign_oauth1.0(myapp, token="yourToken", token_secret="yourTokenSecret")
 homeTL = GET("https://api.twitter.com/1.1/statuses/home_timeline.json", sig) # note how you're passing authentication here
 ```
-**then to convert json object**
+## then to convert json object
 ```r
 json1 = content(homeTL) # recognizes and extracts json data
 json2 = jsonlite::fromJSON(toJSON(json1)) # reformats json extract as a data frame
@@ -824,20 +890,29 @@ json2[1,1:4]
 * httr works well with Facebook, Google, Twitter, Github, etc.
 
 
-## Reading from other sources
-**Google "data storage mechanism R package", eg. "MySQL R package"**   
-**Interacting more directly with files**     
+# Reading from other sources
+
+Google "data storage mechanism R package", eg. "MySQL R package"**   
+
+## Interacting more directly with files**     
 * file: open connection to text file
 * url: open conn to url
 * gzfile, bzfile (for .bz2): open connection to a .gz/.bz2 file 
-* ?connections for more info.
-* REMEMBER TO CLOSE CONNECTIONS
-* 
-**Foreign package**    
-loads data from Minitab, S, SAS, SPSS, Stata, Systat, Weka, etc.
-basically, `read.foo`, like`read.arff (Weka), read.xport(SAS), read.dta (Stata), read.mtp (Minitab), read.octave (Octave), read.spss (SPSS)`
+* *?connections* for more info.
+* <redtext>Remember to close connections </redtext>
 
-**Examples of other database packages**
+## Foreign package**    
+* Loads data from Minitab, S, SAS, SPSS, Stata,Systat
+* Basic functions _read.foo_
+  * read.arff (Weka)
+  * read.dta (Stata)
+  * read.mtp (Minitab)
+  * read.octave (Octave)
+  * read.spss (SPSS)
+  * read.xport (SAS)
+* See the help page for more details [http://cran.r-project.org/web/packages/foreign/foreign.pdf](http://cran.r-project.org/web/packages/foreign/foreign.pdf)
+
+## Examples of other database packages**
 
 * RPostresSQL provides a DBI-compliant database connection from R. Tutorial-[https://code.google.com/p/rpostgresql/](https://code.google.com/p/rpostgresql/), help file-[http://cran.r-project.org/web/packages/RPostgreSQL/RPostgreSQL.pdf](http://cran.r-project.org/web/packages/RPostgreSQL/RPostgreSQL.pdf)
 * RODBC provides interfaces to multiple databases including PostgreQL, MySQL, Microsoft Access and SQLite. Tutorial - [http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf](http://cran.r-project.org/web/packages/RODBC/vignettes/RODBC.pdf), help file - [http://cran.r-project.org/web/packages/RODBC/RODBC.pdf](http://cran.r-project.org/web/packages/RODBC/RODBC.pdf)
