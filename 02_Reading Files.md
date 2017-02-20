@@ -13,6 +13,11 @@ if (!file.exists("directoryName") {
 dir.create("directoryName") }
 ```
 ## Getting data from the internet-download.file()
+* Downloads a file from the internet
+* Even if you could do this by hand, helps with reproducibility
+* Important parameters are *url, destfile, method*
+* Useful for downloading tab-delimited, csv, and other files.
+http://data.baltimorecity.gov/Transportation/Baltimore-Fixed-Speed-Cameras/dz54-2aru
 ```r
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl") 
