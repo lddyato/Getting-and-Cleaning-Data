@@ -284,7 +284,7 @@ xpathSApply(rootNode,"//price",xmlValue)
 **Another example**
 
 
-<img class=center src=../../assets/img/03_ObtainingData/ravens.png height=450>
+<img rsc=https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ravens.png height=450>
 
 [http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens](http://espn.go.com/nfl/team/_/name/bal/baltimore-ravens)
 
