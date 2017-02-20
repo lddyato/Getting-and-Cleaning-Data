@@ -17,12 +17,14 @@ dir.create("directoryName") }
 * Even if you could do this by hand, helps with reproducibility
 * Important parameters are *url, destfile, method*
 * Useful for downloading tab-delimited, csv, and other files.
+
 http://data.baltimorecity.gov/Transportation/Baltimore-Fixed-Speed-Cameras/dz54-2aru
+
 ```r
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl") 
 # if the url starts with *https* on Mac, you may need to set method="curl"
-list.files("./data")
+list.files("./data")    ## [1] "cameras.csv"
 dateDownloaded <- date() # Be sure to record when you downloaded
 ```
 
@@ -34,16 +36,24 @@ dateDownloaded <- date() # Be sure to record when you downloaded
 * Related: `read.csv(), read.csv2()`
 
 ```r
+# Download the file to load
 if (!file.exists("data") {
 dir.create("data") }
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl")   
 # if the url starts with *https* on Mac, you may need to set method="curl"
 dateDownloaded <- date() # Be sure to record when you downloaded
-cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE) 
+# Loading flat files - read.table()
+cameraData <- read.table("./data/cameras.csv", sep = ",", header = TRUE) # If there is no last two parameters, you'll get errors
 cameraData <- read.csv("./data/cameras.csv") #read.csv sets sep="," and header = TRUE
 head(cameraData)
 ```
+* This is the main function for reading data into R
+* Flexible and robust but requires more parameters
+* Reads the data into RAM - big data can cause problems
+* Important parameters file, header, sep, ro.names, nrows
+* Related: read.csv(), read.csv2()
+
 *Some more important parameters*   
 * `quote` - you can tell R whether there are any quoted values quote = "" means no quotes
 * `na.strings` - set the character that represents a missing value. The default is `na.strings=“NA”`, `WQ1=read.table("wq.txt",header=T,na.strings=9999)` # 9999 reprents missing values or "." reprents missing value in SAS
@@ -52,6 +62,8 @@ head(cameraData)
 it always used by combining with the `col.names`, for example, `WQ4=read.table("wq.txt",header=T,skip=2,col.names=c("A","B","C","D"))`
 * `check.names` - renames the repeated variable names, such as, B and B.1 if you set `check.names=T`
 * `dec` - decimal. The default is `dec=”."`. If the data values reprents with comma, set `dec=","` 
+* In my experience, the biggest trouble with reading flat files are quotation marks 'or " placed in data values, setting quote="" often resolves these.
+
 ```r
 read.table(file, header = FALSE, sep = "", quote = "\"'",
            dec = ".", row.names, col.names,
@@ -102,7 +114,6 @@ if (!file.exists("data") {
 dir.create("data") }
 fileurl <- "http://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
 download.file(fileurl, destfile="./data/cameras.csv", method="curl")   
-# if the url starts with *https* on Mac, you may need to set method="curl"
 dateDownloaded <- date() # Be sure to record when you downloaded
 libaray(xlsx)
 cameraData <- read.xlsx("./data/cameras.xlsx", sheetIndex = 1, header = TRUE)
@@ -147,9 +158,10 @@ In general it is adviced to store your data in either a database or in (.csv) or
 * `/node` Top level node
 * `//node` Node at any level
 * node[@attr-name] Node with an attribute name
-* node[@attr-name='bob'] Node with an attribute name attr-name='bob'
+* node[@attr-name='bob'] Node with an attribute name attr-name='bob' 
+* http://www.stat.berkeley.edu/~statcur/Workshop2/Presentations/XML.pdf
 
-```r
+```r-
 # The following is the doc 
 <?xml version="1.0" encoding="UTF-8"?> #By adding this line this R code is doc, by deleting this line is a rootNode.
 <breakfast_menu>
@@ -186,10 +198,11 @@ xpathSApply(rootNode, "//name", xmlValue) # get the name on the menu
 xpathSApply(rootNode, "//prices", xmlValue) # get the prices on the menu
 ```
 ```r
+#Extract content by attributes
 fileurl <- "http://espn.go.com/nf1/team/_/name/bal/baltimore-ravens"
 doc <- htmlTreeParse(fileurl, useInternal = TRUE)
-scores <- xpathSApply(doc, "//li[@class='score']", xmlValue)
-teams <- xpathSApply(doc, "//li[@class='team-name']", xmlValue)
+scores <- xpathSApply(doc, "//li[@class='score']", xmlValue) # "49-27" "14-6"...
+teams <- xpathSApply(doc, "//li[@class='team-name']", xmlValue) # "Denver" "Cleveland"...
 ```
 
 xmlTreeParse does not support https... use instead:
