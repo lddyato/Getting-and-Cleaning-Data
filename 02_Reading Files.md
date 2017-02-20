@@ -59,17 +59,13 @@ read.table(file, header = FALSE, sep = "", quote = "\"'",
            stringsAsFactors = default.stringsAsFactors(),
            fileEncoding = "", encoding = "unknown", text)
 
-read.csv(file, header = TRUE, sep = ",", quote="\"", dec=".",
-         fill = TRUE, comment.char="", ...)
+read.csv(file, header = TRUE, sep = ",", quote="\"", dec=".", fill = TRUE, comment.char="", ...)
 
-read.csv2(file, header = TRUE, sep = ";", quote="\"", dec=",",
-          fill = TRUE, comment.char="", ...)
+read.csv2(file, header = TRUE, sep = ";", quote="\"", dec=",", fill = TRUE, comment.char="", ...)
 
-read.delim(file, header = TRUE, sep = "\t", quote="\"", dec=".",
-           fill = TRUE, comment.char="", ...)
+read.delim(file, header = TRUE, sep = "\t", quote="\"", dec=".", fill = TRUE, comment.char="", ...)
 
-read.delim2(file, header = TRUE, sep = "\t", quote="\"", dec=",",
-            fill = TRUE, comment.char="", ...)
+read.delim2(file, header = TRUE, sep = "\t", quote="\"", dec=",", fill = TRUE, comment.char="", ...)
 ```
 ## fread() VS read.table()
 Similar to **`read.table()`** but faster and more convenient. 
