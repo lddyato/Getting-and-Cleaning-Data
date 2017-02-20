@@ -429,31 +429,124 @@ head(iris2)
 ## Reading mySQL
 * free, widely used open source db software
 * structure: databases, tables (data frame) within, fields (columns) within; each row is a record
-* install MySQL, then install RMySQL # Windows, more complicated... well, Mac Mavericks had problems too, no binaries, installed other ways
-**Example**
+* install MySQL, then install RMySQL 
+  + On a Mac: `install.packages("RMySQL")` 
+  + On Windows:
+    - Official instructions - http://biostat.mc.vanderbilt.edu/wiki/Main/RMySQL (may be useful for Mac/UNIX users as well)
+    - Potentially useful guide - http://www.ahschulz.de/2013/07/23/installing-rmysql-under-windows/
+
+**Example-UCSC database**
+
 UCSC database, http://genome.ucsc.edu/ (web-facing, use sparingly, do NOT delete, add, join etc and class probably will overload so don't use)
+
+<img src="https://raw.githubusercontent.com/DataScienceSpecialization/courses/master/assets/img/03_ObtainingData/ucscmysql.png">
+
+## Connecting and listing databases
+
+
 ```r
 # connecting and listing databases
-ucscDb <- dbConnect(MySQL(), user="genome", host="genome-mysql.cse.ucsc.edu") # ucscDb is a handle
-result <- dbGetQuery(ucscDb, "show databases"); dbDisconnect(ucscDb); # 'show databases' is SQL not R code
-# connecting to hg19, one of the databases, and listing tables
-hg19 <- dbConnect(MySQL(), user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
+ucscDb <- dbConnect(MySQL(),user="genome", host="genome-mysql.cse.ucsc.edu") 
+result <- dbGetQuery(ucscDb,"show databases;") # 'show databases' is SQL not R code
+dbDisconnect(ucscDb);
+# [1] TRUE
+result
+
+#               Database
+# 1   information_schema
+# 2              ailMel1
+# 3              allMis1
+# 4              anoCar1
+# 5              anoCar2
+# 6              anoGam1
+# 7              apiMel1
+# 8              apiMel2
+# 9              aplCal1
+# 10             bosTau2
+...  ...  ...  ...  ...
+# 170            tetNig2
+# 171            triMan1
+# 172            tupBel1
+# 173            turTru2
+# 174            uniProt
+# 175            vicPac1
+# 176            vicPac2
+# 177           visiGene
+# 178            xenTro1
+# 179            xenTro2
+# 180            xenTro3
+```
+
+```r
+# Connecting to hg19, one of the databases, and listing tables
+hg19 <- dbConnect(MySQL(),user="genome", db="hg19", host="genome-mysql.cse.ucsc.edu")
 allTables <- dbListTables(hg19)
 length(allTables) # over 10949 tables
+# [1] 10949
 allTables[1:5] # the first 5 tables
-dbListFields(hg19,"affyU133Plus2") # dimensions of a specific table "affyU133Plus2"
+# [1] "HInv"         "HInvGeneMrna" "acembly"      "acemblyClass" "acemblyPep"  
+dbListFields(hg19,"affyU133Plus2")  ## Get dimensions of a specific table
+#  [1] "bin"         "matches"     "misMatches"  "repMatches"  "nCount"      "qNumInsert" 
+#  [7] "qBaseInsert" "tNumInsert"  "tBaseInsert" "strand"      "qName"       "qSize"      
+# [13] "qStart"      "qEnd"        "tName"       "tSize"       "tStart"      "tEnd"       
+# [19] "blockCount"  "blockSizes"  "qStarts"     "tStarts"    
 dbGetQuery(hg19, "select count(*) from affyU133Plus2") # 58463 columns in table "affyU133Plus2"
-affyData <- dbReadQuery(hg19, "affyU133Plus2") #read from the table
-head(affyData) # first 6 rows
+#     count(*)
+# 1    58463
+affyData <- dbReadTable(hg19, "affyU133Plus2") ## Read from the table
+head(affyData)  # first 6 rows
+#   bin matches misMatches repMatches nCount qNumInsert qBaseInsert tNumInsert tBaseInsert strand
+# 1 585     530          4          0     23          3          41          3         898      -
+# 2 585    3355         17          0    109          9          67          9       11621      -
+# 3 585    4156         14          0     83         16          18          2          93      -
+# 4 585    4667          9          0     68         21          42          3        5743      -
+# 5 585    5180         14          0    167         10          38          1          29      -
+# 6 585     468          5          0     14          0           0          0           0      -
+#          qName qSize qStart qEnd tName     tSize tStart  tEnd blockCount
+# 1  225995_x_at   637      5  603  chr1 249250621  14361 15816          5
+# 2  225035_x_at  3635      0 3548  chr1 249250621  14381 29483         17
+# 3  226340_x_at  4318      3 4274  chr1 249250621  14399 18745         18
+# 4 1557034_s_at  4834     48 4834  chr1 249250621  14406 24893         23
+# 5    231811_at  5399      0 5399  chr1 249250621  19688 25078         11
+# 6    236841_at   487      0  487  chr1 249250621  27542 28029          1
+#                                                                   blockSizes
+# 1                                                          93,144,229,70,21,
+# 2              73,375,71,165,303,360,198,661,201,1,260,250,74,73,98,155,163,
+# 3                 690,10,32,33,376,4,5,15,5,11,7,41,277,859,141,51,443,1253,
+# 4 99,352,286,24,49,14,6,5,8,149,14,44,98,12,10,355,837,59,8,1500,133,624,58,
+# 5                                       131,26,1300,6,4,11,4,7,358,3359,155,
+# 6                                                                       487,
+                                                                                                 qStarts
+# 1                                                                                    34,132,278,541,611,
+# 2                        87,165,540,647,818,1123,1484,1682,2343,2545,2546,2808,3058,3133,3206,3317,3472,
+# 3                   44,735,746,779,813,1190,1195,1201,1217,1223,1235,1243,1285,1564,2423,2565,2617,3062,
+# 4 0,99,452,739,764,814,829,836,842,851,1001,1016,1061,1160,1173,1184,1540,2381,2441,2450,3951,4103,4728,
+# 5                                                     0,132,159,1460,1467,1472,1484,1489,1497,1856,5244,
+# 6                                                                                                     0,
+# tStarts
+# 1 14361,14454,14599,14968,15795,
+# 2 14381,14454,14969,15075,15240,15543,15903,16104,16853,17054,17232,17492,17914,17988,18267,24736,29320,
+# 3 14399,15089,15099,15131,15164,15540,15544,15549,15564,15569,15580,15587,15628,15906,16857,16998,17049,17492,
+# 4 14406,20227,20579,20865,20889,20938,20952,20958,20963,20971,21120,21134,21178,21276,21288,21298,21653,22492,22551,22559,24059,24215,
+# 5 19688,19819,19845,21145,21151,21155,21166,21170,21177,21535,24923,
+# 6 27542,
+
 query <- dbSendQuery(hg19, "select * from affyU133Plus2 where misMatches between 1 and 3") 
-# select a specific subset and stores query remotely in the database
+## Select a specific subset and stores query remotely in the database
 affyMis <- fetch(query) 
 quantile(affyMis$misMatches)
-affyMisSmall <- fetch(query, n=10) 
-dbClearResult(query) # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward
-dim(affyMisSmall) # 10  22
-dbDisconnect(hg19) # Dont forget to close the connection
+#   0%  25%  50%  75% 100% 
+#    1    1    2    2    3 
+affyMisSmall <- fetch(query,n=10);  # to not suck down a huge chunk of data, using n=10... make sure to clear the query afterward
+dbClearResult(query);
+# [1] TRUE
+dim(affyMisSmall)
+# [1] 10 22
+
+dbDisconnect(hg19)## Don't forget to close the connection!
+# [1] TRUE
 ```
+
 *Note*
 * do not delete, add or join things from ensembl. Only select.
 * be careful with mysql commands 
@@ -473,32 +566,73 @@ source("http://bioconductor.org/biocLite.R")
 biocLite("rhdf5")
 library(rhdf5)
 created = h5createFile("example.h5")
-#(primarily for genomics, but also has good big data packages. can use to interfact with any hdf5 data sets
+created
+# [1] TRUE
+```
+* This will install packages from Bioconductor [http://bioconductor.org/](http://bioconductor.org/), primarily used for genomics but also has good "big data" packages
+* Can be used to interface with hdf5 data sets. 
+* This lecture is modeled very closely on the rhdf5 tutorial that
+can be found here [http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf](http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf)
+
+```r
 #creating groups
 created = h5createGroup("example.h5", "foo")
 created = h5createGroup("example.h5", "bar")
 created = h5createGroup("example.h5", "foo/foobar")
 h5ls(("example.h5") # h5 then ls as in list, this lists files
-#shows 3 groups, 0 is /, bar; 1 is /, foo; and 2 is /foo, foobar (group, name)
+#   group   name     otype dclass dim
+# 0     /    baa H5I_GROUP           
+# 1     /    foo H5I_GROUP           
+# 2  /foo foobaa H5I_GROUP 
+
 #writing to groups, say A is a matrix, B is an array
 A = matrix(1:10, nr = 5, nc=2)
 h5write(A, "example.h5", "foo/A") # adds another file in the h5ls in the /foo group
 B = array(seq(0.1, 2.0, by=0.1), dim = c(5, 2, 2))
 attr(B, "scale") <- "liter" 
-h5write(B, "example.h5", "foo/foobar/BA") # adds another file in the h5ls in the /foo/foobar group, B name
+h5write(B, "example.h5", "foo/foobaa/B") # adds another file in the h5ls in the /foo/foobar group, B name
 h5ls("example.h5")
+#         group   name       otype  dclass       dim
+# 0           /    baa   H5I_GROUP                  
+# 1           /    foo   H5I_GROUP                  
+# 2        /foo      A H5I_DATASET INTEGER     5 x 2
+# 3        /foo foobaa   H5I_GROUP                  
+# 4 /foo/foobaa      B H5I_DATASET   FLOAT 5 x 2 x 2
+
 #writing a dataset, say df is a dataframe:
 df = dataframe(1L:5L, seq(0, 1, length.out = 5), c("ab", "cde", "fghi", "s"), stringsAsFactors = FALSE)
 h5write(df, "example.h5", "df") # adds another file in the h5ls, in top level or root group, named df
+h5ls("example.h5")
+#         group   name       otype   dclass       dim
+# 0           /    baa   H5I_GROUP                   
+# 1           /     df H5I_DATASET COMPOUND         5
+# 2           /    foo   H5I_GROUP                   
+# 3        /foo      A H5I_DATASET  INTEGER     5 x 2
+# 4        /foo foobaa   H5I_GROUP                   
+# 5 /foo/foobaa      B H5I_DATASET    FLOAT 5 x 2 x 2
+
 #reading data:
 readA = h5read("example.h5", "foo/A")
-readB = h5read("example.h5", "foo/foobar/B")
+readB = h5read("example.h5", "foo/foobaa/B")
 readdf = h5read("example.h5", "df")
+#     [,1] [,2]
+# [1,]    1    6
+# [2,]    2    7
+# [3,]    3    8
+# [4,]    4    9
+# [5,]    5   10
+
 #writing and reading chunks: 
 h5write(c(12,13,14), "example.h5", "foo/A", index = list(1:3,1)) 
 #note this OVERWRITES first 3 rows in col 1 of A:
 # you can use index within h5read() as well
 h5read("example.h5", "foo/A")
+#      [,1] [,2]
+# [1,]   12    6
+# [2,]   13    7
+# [3,]   14    8
+# [4,]    4    9
+# [5,]    5   10
 ```
 SUMMARY: hdf5 can be used to optimize reading / writing from disk in R. see tutorial in (I saved copy of pdf): <http://www.bioconductor.org/packages/release/bioc/vignettes/rhdf5/inst/doc/rhdf5.pdf>
 also <http://www.hdfgroup.org/HDF5>
